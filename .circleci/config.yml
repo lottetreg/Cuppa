@@ -1,4 +1,5 @@
-version: 2
+version: 2.1
+
 jobs:
   build:
     docker:
@@ -26,4 +27,38 @@ jobs:
             - ~/.gradle
           key: v1-dependencies-{{ checksum "build.gradle" }}
 
-      - run: gradle test
+      - run: gradle build
+
+      - persist_to_workspace:
+          root: ~/repo/jar
+          paths:
+            - httpserver-1.0-SNAPSHOT.jar
+
+
+  deploy:
+    machine: true
+    steps:
+
+      - attach_workspace:
+          at: /tmp/workspace
+
+      - add_ssh_keys:
+          fingerprints:
+            - "78:11:cd:e5:32:0f:71:41:27:c9:a9:2a:5e:3c:d9:91"
+
+      - run:
+          name: Send JAR to Server
+          command: |
+            scp /tmp/workspace/httpserver-1.0-SNAPSHOT.jar $SSH_USER@$SSH_HOST:$SSH_DEPLOY_PATH
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master

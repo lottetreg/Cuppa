@@ -1,14 +1,27 @@
 package io.github.lottetreg.httpserver;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.util.List;
 
 public class Reader {
-  public String read(Connectionable connection) {
+  public HTTPRequest read(Connectionable connection) {
     try {
-      InputStreamReader inputStreamReader = new InputStreamReader(connection.getInputStream());
-      BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-      return bufferedReader.readLine();
+      StreamReader streamReader =
+              new StreamReader(connection.getInputStream());
+
+      String initialLine = streamReader.readLine();
+      List<String> headerLines = streamReader.readLinesUntilEmptyLine();
+
+      HTTPRequest request = new HTTPRequest(
+              new HTTPInitialLine(initialLine),
+              new HTTPHeaders(headerLines));
+
+      int contentLength = request.getContentLength();
+      if(contentLength > 0) {
+        String body = streamReader.readNChars(contentLength);
+        request.setBody(body);
+      }
+
+      return request;
     } catch (Connection.FailedToGetInputStreamException e) {
       throw e;
     } catch (Exception e) {

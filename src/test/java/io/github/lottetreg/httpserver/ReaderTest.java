@@ -8,23 +8,51 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.*;
 
+
 public class ReaderTest {
   @Rule
   public ExpectedException exceptionRule = ExpectedException.none();
 
   @Test
-  public void itReadsFromTheConnection() {
+  public void readReturnsAnHTTPRequest() {
     class MockConnection extends BaseMockConnection {
       @Override
       public InputStream getInputStream() {
-        String input = "Some string";
-        return new ByteArrayInputStream(input.getBytes());
+        String request =
+                "GET / HTTP/1.0\r\n" +
+                "Content-Length: 17\r\n" +
+                "\r\n" +
+                "some body to love";
+
+        return new ByteArrayInputStream(request.getBytes());
       }
     }
 
     Connectionable connection = new MockConnection();
 
-    assertEquals("Some string", new Reader().read(connection));
+    HTTPRequest request = new Reader().read(connection);
+
+    assertEquals("some body to love", request.body);
+  }
+
+  @Test
+  public void readReturnsAnHTTPRequestWithAnEmptyBody() {
+    class MockConnection extends BaseMockConnection {
+      @Override
+      public InputStream getInputStream() {
+        String request =
+                        "GET / HTTP/1.0\r\n" +
+                        "\r\n";
+
+        return new ByteArrayInputStream(request.getBytes());
+      }
+    }
+
+    Connectionable connection = new MockConnection();
+
+    HTTPRequest request = new Reader().read(connection);
+
+    assertEquals("", request.body);
   }
 
   @Test

@@ -27,7 +27,7 @@ public class WriterTest {
 
     new Writer().write(connection, "Some other string");
 
-    assertEquals("Some other string\n", connection.getOutputStream().toString());
+    assertEquals("Some other string", connection.getOutputStream().toString());
   }
 
   @Test

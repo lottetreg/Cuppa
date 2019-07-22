@@ -1,12 +1,13 @@
 package io.github.lottetreg.httpserver;
 
-import java.io.PrintWriter;
+import java.io.OutputStreamWriter;
 
 public class Writer {
   public void write(Connectionable connection, String output) {
     try {
-      PrintWriter printWriter = new PrintWriter(connection.getOutputStream(), true);
-      printWriter.println(output);
+      OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
+      writer.write(output, 0, output.length());
+      writer.flush();
     } catch (Connection.FailedToGetOutputStreamException e) {
       throw e;
     } catch (Exception e) {

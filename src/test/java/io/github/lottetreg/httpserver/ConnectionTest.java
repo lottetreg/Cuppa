@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.junit.Rule;
 
 import static org.junit.Assert.assertEquals;
+
 import org.junit.rules.ExpectedException;
 
 import java.io.*;
@@ -16,7 +17,7 @@ public class ConnectionTest {
   @Test
   public void getInputStreamReturnsTheSocketsInputStream() throws IOException {
     class MockSocket extends Socket {
-      private ByteArrayInputStream inputStream = new ByteArrayInputStream(new byte[] {});
+      private ByteArrayInputStream inputStream = new ByteArrayInputStream(new byte[]{});
 
       @Override
       public InputStream getInputStream() {
@@ -33,7 +34,8 @@ public class ConnectionTest {
   @Test
   public void getOutputStreamReturnsTheSocketsOutputStream() throws IOException {
     class MockSocket extends Socket {
-      private ByteArrayOutputStream outputStream = new ByteArrayOutputStream();;
+      private ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+      ;
 
       @Override
       public OutputStream getOutputStream() {
@@ -58,7 +60,7 @@ public class ConnectionTest {
 
     Connection connection = new Connection(new MockSocket());
 
-    exceptionRule.expect(Connection.FailedToGetInputStreamException.class);
+    exceptionRule.expect(Connection.FailedToGetInputStream.class);
     exceptionRule.expectMessage("Failed to get the input stream of the connection");
 
     connection.getInputStream();
@@ -75,7 +77,7 @@ public class ConnectionTest {
 
     Connection connection = new Connection(new MockSocket());
 
-    exceptionRule.expect(Connection.FailedToGetOutputStreamException.class);
+    exceptionRule.expect(Connection.FailedToGetOutputStream.class);
     exceptionRule.expectMessage("Failed to get the output stream of the connection");
 
     connection.getOutputStream();

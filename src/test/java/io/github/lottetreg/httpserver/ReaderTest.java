@@ -1,5 +1,6 @@
 package io.github.lottetreg.httpserver;
 
+import io.github.lottetreg.httpserver.support.RequestBuilder;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -7,7 +8,6 @@ import org.junit.rules.ExpectedException;
 import static org.junit.Assert.assertEquals;
 
 import java.io.*;
-
 
 public class ReaderTest {
   @Rule
@@ -18,11 +18,12 @@ public class ReaderTest {
     class MockConnection extends BaseMockConnection {
       @Override
       public InputStream getInputStream() {
-        String request =
-                "GET / HTTP/1.0\r\n" +
-                "Content-Length: 17\r\n" +
-                "\r\n" +
-                "some body to love";
+        String request = new RequestBuilder()
+            .setMethod("POST")
+            .setPath("/")
+            .addHeader("Content-Length: 17")
+            .setBody("some body to love")
+            .build();
 
         return new ByteArrayInputStream(request.getBytes());
       }
@@ -32,7 +33,7 @@ public class ReaderTest {
 
     HTTPRequest request = new Reader().read(connection);
 
-    assertEquals("some body to love", request.body);
+    assertEquals("some body to love", request.getBody());
   }
 
   @Test
@@ -40,9 +41,10 @@ public class ReaderTest {
     class MockConnection extends BaseMockConnection {
       @Override
       public InputStream getInputStream() {
-        String request =
-                        "GET / HTTP/1.0\r\n" +
-                        "\r\n";
+        String request = new RequestBuilder()
+            .setMethod("GET")
+            .setPath("/")
+            .build();
 
         return new ByteArrayInputStream(request.getBytes());
       }
@@ -52,20 +54,20 @@ public class ReaderTest {
 
     HTTPRequest request = new Reader().read(connection);
 
-    assertEquals("", request.body);
+    assertEquals("", request.getBody());
   }
 
   @Test
   public void itReThrowsAFailedToGetInputStreamException() {
     class MockConnection extends BaseMockConnection {
       public InputStream getInputStream() {
-        throw new Connection.FailedToGetInputStreamException(new Throwable());
+        throw new Connection.FailedToGetInputStream(new Throwable());
       }
     }
 
     Connectionable connection = new MockConnection();
 
-    exceptionRule.expect(Connection.FailedToGetInputStreamException.class);
+    exceptionRule.expect(Connection.FailedToGetInputStream.class);
 
     new Reader().read(connection);
   }
@@ -80,7 +82,7 @@ public class ReaderTest {
 
     Connectionable connection = new MockConnection();
 
-    exceptionRule.expect(Reader.FailedToReadFromConnectionException.class);
+    exceptionRule.expect(Reader.FailedToReadFromConnection.class);
 
     new Reader().read(connection);
   }
@@ -91,7 +93,7 @@ public class ReaderTest {
     }
 
     public InputStream getInputStream() {
-      return new ByteArrayInputStream(new byte[] {});
+      return new ByteArrayInputStream(new byte[]{});
     }
   }
 }

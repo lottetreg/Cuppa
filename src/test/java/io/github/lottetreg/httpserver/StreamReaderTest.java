@@ -9,38 +9,54 @@ import java.util.Arrays;
 import static org.junit.Assert.assertEquals;
 
 public class StreamReaderTest {
-  private String data =
-          "GET / HTTP/1.0\r\n" +
-          "Content-Length: 17\r\n" +
-          "\r\n" +
-          "some body to love";
+  private String data = "First Line\r\n" + "Second Line\r\n" + "\r\n" + "Last Line";
 
   @Test
   public void testReadLine() throws IOException {
     StreamReader reader =
-            new StreamReader(new ByteArrayInputStream(this.data.getBytes()));
+        new StreamReader(new ByteArrayInputStream(this.data.getBytes()));
 
-    assertEquals("GET / HTTP/1.0", reader.readLine());
-    assertEquals("Content-Length: 17", reader.readLine());
+    assertEquals("First Line", reader.readLine());
+    assertEquals("Second Line", reader.readLine());
     assertEquals("", reader.readLine());
-    assertEquals("some body to love", reader.readLine());
+    assertEquals("Last Line", reader.readLine());
   }
 
   @Test
   public void testReadLinesUntilEmptyLine() throws IOException {
     StreamReader reader =
-            new StreamReader(new ByteArrayInputStream(this.data.getBytes()));
+        new StreamReader(new ByteArrayInputStream(this.data.getBytes()));
 
-    assertEquals(Arrays.asList("GET / HTTP/1.0", "Content-Length: 17"), reader.readLinesUntilEmptyLine());
+    assertEquals(Arrays.asList("First Line", "Second Line"), reader.readLinesUntilEmptyLine());
   }
 
   @Test
-  public void testReadNChars() throws IOException {
+  public void testReadNCharsWithPartialLengthOfRemainingChars() throws IOException {
     StreamReader reader =
-            new StreamReader(new ByteArrayInputStream(this.data.getBytes()));
+        new StreamReader(new ByteArrayInputStream(this.data.getBytes()));
 
     reader.readLinesUntilEmptyLine();
 
-    assertEquals("some body to love", reader.readNChars(17));
+    assertEquals("Last", reader.readNChars(4));
+  }
+
+  @Test
+  public void testReadNCharsWithWholeLengthOfRemainingChars() throws IOException {
+    StreamReader reader =
+        new StreamReader(new ByteArrayInputStream(this.data.getBytes()));
+
+    reader.readLinesUntilEmptyLine();
+
+    assertEquals("Last Line", reader.readNChars(9));
+  }
+
+  @Test
+  public void testReadNCharsWith0Length() throws IOException {
+    StreamReader reader =
+        new StreamReader(new ByteArrayInputStream(this.data.getBytes()));
+
+    reader.readLinesUntilEmptyLine();
+
+    assertEquals("", reader.readNChars(0));
   }
 }

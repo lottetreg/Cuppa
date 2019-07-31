@@ -15,14 +15,15 @@ public class ServerSocketTest {
   public void itThrowsAnExceptionIfItFailsToAcceptTheConnection() throws IOException {
     MockServerSocket serverSocket = new MockServerSocket();
 
-    exceptionRule.expect(ServerSocket.FailedToAcceptConnectionException.class);
+    exceptionRule.expect(ServerSocket.FailedToAcceptConnection.class);
     exceptionRule.expectMessage("Failed to accept connection");
 
     new ServerSocket(serverSocket).acceptConnection();
   }
 
   private class MockServerSocket extends java.net.ServerSocket {
-    MockServerSocket() throws IOException {}
+    MockServerSocket() throws IOException {
+    }
 
     public Socket accept() throws IOException {
       throw new IOException(new Throwable());

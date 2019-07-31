@@ -21,7 +21,7 @@ public class HTTPInitialLineTest {
 
   @Test
   public void itRaisesAnExceptionIfTheInitialLineIsEmpty() {
-    exceptionRule.expect(HTTPInitialLine.IncorrectlyFormattedInitialLineException.class);
+    exceptionRule.expect(HTTPInitialLine.IncorrectlyFormattedInitialLine.class);
     exceptionRule.expectMessage("Initial line is incorrectly formatted: ");
 
     new HTTPInitialLine("");
@@ -29,7 +29,7 @@ public class HTTPInitialLineTest {
 
   @Test
   public void itRaisesAnExceptionIfTheInitialLineHasOnlyOnePart() {
-    exceptionRule.expect(HTTPInitialLine.IncorrectlyFormattedInitialLineException.class);
+    exceptionRule.expect(HTTPInitialLine.IncorrectlyFormattedInitialLine.class);
     exceptionRule.expectMessage("Initial line is incorrectly formatted: GET");
 
     new HTTPInitialLine("GET");
@@ -37,7 +37,7 @@ public class HTTPInitialLineTest {
 
   @Test
   public void itRaisesAnExceptionIfTheInitialLineHasOnlyTwoParts() {
-    exceptionRule.expect(HTTPInitialLine.IncorrectlyFormattedInitialLineException.class);
+    exceptionRule.expect(HTTPInitialLine.IncorrectlyFormattedInitialLine.class);
     exceptionRule.expectMessage("Initial line is incorrectly formatted: GET /");
 
     new HTTPInitialLine("GET /");

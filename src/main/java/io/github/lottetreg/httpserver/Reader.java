@@ -6,31 +6,28 @@ public class Reader {
   public HTTPRequest read(Connectionable connection) {
     try {
       StreamReader streamReader =
-              new StreamReader(connection.getInputStream());
+          new StreamReader(connection.getInputStream());
 
       String initialLine = streamReader.readLine();
       List<String> headerLines = streamReader.readLinesUntilEmptyLine();
 
       HTTPRequest request = new HTTPRequest(
-              new HTTPInitialLine(initialLine),
-              new HTTPHeaders(headerLines));
+          new HTTPInitialLine(initialLine),
+          new HTTPHeaders(headerLines));
 
-      int contentLength = request.getContentLength();
-      if(contentLength > 0) {
-        String body = streamReader.readNChars(contentLength);
-        request.setBody(body);
-      }
+      String body = streamReader.readNChars(request.getContentLength());
+      request.setBody(body);
 
       return request;
-    } catch (Connection.FailedToGetInputStreamException e) {
+    } catch (Connection.FailedToGetInputStream e) {
       throw e;
     } catch (Exception e) {
-      throw new FailedToReadFromConnectionException(e);
+      throw new FailedToReadFromConnection(e);
     }
   }
 
-  static class FailedToReadFromConnectionException extends RuntimeException {
-    FailedToReadFromConnectionException(Throwable cause) {
+  static class FailedToReadFromConnection extends RuntimeException {
+    FailedToReadFromConnection(Throwable cause) {
       super("Failed to read from the connection", cause);
     }
   }

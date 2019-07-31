@@ -14,35 +14,35 @@ public class Connection implements Connectionable {
   public InputStream getInputStream() {
     try {
       return this.socket.getInputStream();
-    } catch(Exception e) {
-      throw new FailedToGetInputStreamException(e);
+    } catch (Exception e) {
+      throw new FailedToGetInputStream(e);
     }
   }
 
   public OutputStream getOutputStream() {
     try {
       return this.socket.getOutputStream();
-    } catch(Exception e) {
-      throw new FailedToGetOutputStreamException(e);
+    } catch (Exception e) {
+      throw new FailedToGetOutputStream(e);
     }
   }
 
   public void close() {
     try {
       this.socket.close();
-    } catch(Exception e) {
+    } catch (Exception e) {
       throw new FailedToCloseConnection(e);
     }
   }
 
-  static class FailedToGetInputStreamException extends RuntimeException {
-    FailedToGetInputStreamException(Throwable cause) {
+  static class FailedToGetInputStream extends RuntimeException {
+    FailedToGetInputStream(Throwable cause) {
       super("Failed to get the input stream of the connection", cause);
     }
   }
 
-  static class FailedToGetOutputStreamException extends RuntimeException {
-    FailedToGetOutputStreamException(Throwable cause) {
+  static class FailedToGetOutputStream extends RuntimeException {
+    FailedToGetOutputStream(Throwable cause) {
       super("Failed to get the output stream of the connection", cause);
     }
   }

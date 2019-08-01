@@ -3,10 +3,10 @@ package io.github.lottetreg.httpserver;
 import java.util.Map;
 
 public class HTTPResponse {
-  private static String CRLF = "\r\n";
+  private String CRLF = "\r\n";
 
   private int statusCode;
-  private String body;
+  private byte[] body;
   private String protocolVersion;
   private HTTPHeaders headers;
 
@@ -39,7 +39,26 @@ public class HTTPResponse {
   }
 
   public String toString() {
-    return getProtocolVersion() + " " + getStatus() + this.CRLF + joinedHeaders() + this.CRLF + getBody();
+    return new String(toBytes());
+  }
+
+  public byte[] toBytes() {
+    byte[] responseData = (initialLine() + joinedHeaders() + this.CRLF).getBytes();
+    byte[] responseBody = getBody();
+
+    return concatByteArrays(responseData, responseBody);
+  }
+
+  private String initialLine() {
+    return getProtocolVersion() + " " + getStatus() + this.CRLF;
+  }
+
+  private String getProtocolVersion() {
+    return "HTTP/" + this.protocolVersion;
+  }
+
+  private String getStatus() {
+    return getStatusCode() + " " + this.statuses.get(getStatusCode());
   }
 
   private String joinedHeaders() {
@@ -50,35 +69,39 @@ public class HTTPResponse {
         .reduce("", (header, acc) -> acc + header + this.CRLF);
   }
 
-  private String getProtocolVersion() {
-    String protocol = "HTTP";
-    return protocol + "/" + this.protocolVersion;
-  }
-
-  private String getStatus() {
-    int statusCode = getStatusCode();
-    return statusCode + " " + this.statuses.get(statusCode);
-  }
-
-  private String getBody() {
+  private byte[] getBody() {
     return this.body;
+  }
+
+  private byte[] concatByteArrays(byte[] firstArray, byte[] secondArray) {
+    byte[] finalArray = new byte[firstArray.length + secondArray.length];
+
+    System.arraycopy(firstArray, 0, finalArray, 0, firstArray.length);
+    System.arraycopy(secondArray, 0, finalArray, firstArray.length, secondArray.length);
+
+    return finalArray;
   }
 
   public static class Builder {
     public int statusCode;
-    public String body;
+    public byte[] body;
     public String protocolVersion;
     public HTTPHeaders headers;
 
     public Builder(int statusCode) {
       this.statusCode = statusCode;
-      this.body = "";
+      this.body = new byte[] {};
       this.protocolVersion = "1.0";
       this.headers = new HTTPHeaders();
     }
 
-    public Builder setBody(String body) {
+    public Builder setBody(byte[] body) {
       this.body = body;
+      return this;
+    }
+
+    public Builder setBody(String body) {
+      this.body = body.getBytes();
       return this;
     }
 

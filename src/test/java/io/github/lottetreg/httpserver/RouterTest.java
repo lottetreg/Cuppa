@@ -76,6 +76,31 @@ public class RouterTest {
   }
 
   @Test
+  public void itReturns404ResponseAndLogsTheErrorIfAResourceIsMissing() {
+    class RouteWithMissingResource extends BaseRoute {
+      RouteWithMissingResource(String path, String method) {
+        super(path, method);
+      }
+
+      public HTTPResponse getResponse(HTTPRequest request) {
+        throw new Resource.MissingResource("/missing.html", new Throwable());
+      }
+    }
+
+    HTTPRequest request = new HTTPRequest(
+        new HTTPInitialLine("GET / HTTP/1.0"),
+        new HTTPHeaders());
+
+    List<Routable> routes = Arrays.asList(new RouteWithMissingResource("/", "GET"));
+
+    Outable out = new MockOut();
+    HTTPResponse response = new Router(routes, out).route(request);
+
+    assertEquals("HTTP/1.0 404 Not Found\r\n\r\n", response.toString());
+    assertEquals("Could not find /missing.html", ((MockOut) out).message);
+  }
+
+  @Test
   public void itReturns405ResponseAndLogsTheErrorIfThereIsNoMatchingMethodForTheRoute() {
     HTTPRequest request = new HTTPRequest(
         new HTTPInitialLine("POST / HTTP/1.0"),

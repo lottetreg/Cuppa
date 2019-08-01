@@ -73,6 +73,14 @@ public class RouteTest {
           .setBody(this.request.getBody())
           .build();
     }
+
+    public HTTPResponse missingResource() {
+      throw new FileHelpers.MissingFile("/missing.html", new Throwable());
+    }
+
+    public HTTPResponse failure() {
+      throw new RuntimeException(new Throwable());
+    }
   }
 
   private String controllersPackage = "io.github.lottetreg.httpserver";
@@ -106,6 +114,19 @@ public class RouteTest {
   }
 
   @Test
+  public void itReturnsA404ResponseIfTheViewIsMissing() {
+    HTTPRequest request = new HTTPRequest(
+        new HTTPInitialLine("GET / HTTP/1.0"),
+        new HTTPHeaders());
+
+    Route route = new Route("", "", "RouteTest$Controller", "empty", this.controllersPackage);
+
+    HTTPResponse response = route.getResponse(request);
+
+    assertEquals("HTTP/1.0 200 OK\r\n\r\n", response.toString());
+  }
+
+  @Test
   public void itThrowsAnExceptionIfTheControllerIsMissing() {
     HTTPRequest request = new HTTPRequest(
         new HTTPInitialLine("GET / HTTP/1.0"),
@@ -130,6 +151,34 @@ public class RouteTest {
         "Could not find missingAction in io.github.lottetreg.httpserver.RouteTest$Controller");
 
     Route route = new Route("", "", "RouteTest$Controller", "missingAction", this.controllersPackage);
+
+    route.getResponse(request);
+  }
+
+  @Test
+  public void itThrowsAnExceptionIfTheActionFailsBecauseAResourceIsMissing() {
+    HTTPRequest request = new HTTPRequest(
+        new HTTPInitialLine("GET / HTTP/1.0"),
+        new HTTPHeaders());
+
+    exceptionRule.expect(Routable.MissingResource.class);
+    exceptionRule.expectMessage("Could not find /missing.html");
+
+    Route route = new Route("", "", "RouteTest$Controller", "missingResource", this.controllersPackage);
+
+    route.getResponse(request);
+  }
+
+  @Test
+  public void itThrowsAnExceptionIfTheActionFailsForAnyOtherReason() {
+    HTTPRequest request = new HTTPRequest(
+        new HTTPInitialLine("GET / HTTP/1.0"),
+        new HTTPHeaders());
+
+    exceptionRule.expect(Route.FailedControllerAction.class);
+    exceptionRule.expectMessage("Failed to complete failure in io.github.lottetreg.httpserver.RouteTest$Controller");
+
+    Route route = new Route("", "", "RouteTest$Controller", "failure", this.controllersPackage);
 
     route.getResponse(request);
   }

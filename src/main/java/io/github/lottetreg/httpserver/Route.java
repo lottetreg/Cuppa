@@ -37,10 +37,19 @@ public class Route extends BaseRoute {
 
     } catch (ClassNotFoundException e) {
       throw new MissingController(controllerName);
+
     } catch (NoSuchMethodException e) {
       throw new MissingControllerAction(actionName, controllerName);
-    } catch (InvocationTargetException | IllegalAccessException | InstantiationException e) {
-      throw new RuntimeException(e);
+
+    } catch (InvocationTargetException e) {
+      if(e.getCause() instanceof FileHelpers.MissingFile) {
+        throw new MissingResource(e.getCause().getMessage(), e);
+      } else {
+        throw new FailedControllerAction(actionName, controllerName, e);
+      }
+
+    } catch (IllegalAccessException | InstantiationException e) {
+      throw new FailedToGetResponse(getPath(), getMethod(), e);
     }
   }
 
@@ -61,6 +70,12 @@ public class Route extends BaseRoute {
   static class MissingControllerAction extends RuntimeException {
     MissingControllerAction(String action, String controller) {
       super("Could not find " + action + " in " + controller);
+    }
+  }
+
+  static class FailedControllerAction extends RuntimeException {
+    FailedControllerAction(String action, String controller, Throwable cause) {
+      super("Failed to complete " + action + " in " + controller, cause);
     }
   }
 }

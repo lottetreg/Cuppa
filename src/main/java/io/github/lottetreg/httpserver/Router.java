@@ -22,15 +22,15 @@ public class Router {
   public HTTPResponse route(HTTPRequest request) {
     try {
       Routable route = findMatchingRoute(request);
-      HTTPResponse response = route.getResponse(request);
 
-      if(request.getMethod().equals("OPTIONS")) {
-        response.addHeader("Allow", getAllowedMethods(request));
+      if(route.getMethod().equals("OPTIONS")) {
+        return new HTTPResponse.Builder(200).build()
+            .addHeader("Allow", getAllowedMethods(request));
+      } else {
+        return route.getResponse(request);
       }
 
-      return response;
-
-    } catch (NoMatchingPath e) {
+    } catch (NoMatchingPath | Routable.MissingResource e) {
       this.out.println(e.getMessage());
       return new HTTPResponse.Builder(404).build();
 
@@ -49,7 +49,7 @@ public class Router {
     String requestPath = request.getURI();
     String requestMethod = request.getMethod();
 
-    if (noRoutesMatchingPath(requestPath)) {
+    if (noRoutesMatchPath(requestPath)) {
       throw new NoMatchingPath(requestPath);
     }
 
@@ -66,7 +66,7 @@ public class Router {
         .filter(route -> route.hasPath(path));
   }
 
-  private Boolean noRoutesMatchingPath(String path) {
+  private Boolean noRoutesMatchPath(String path) {
     return this.routes.stream()
         .noneMatch(route -> route.hasPath(path));
   }

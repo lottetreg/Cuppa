@@ -1,21 +1,31 @@
 package io.github.lottetreg.httpserver;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiPredicate;
+import java.util.stream.Stream;
 
 public class Server {
   public void start(ServerSocket serverSocket) {
     Connection connection;
+    List<Routable> routes = getRoutes();
+
     while ((connection = serverSocket.acceptConnection()) != null) {
       HTTPRequest request = new Reader().read(connection);
-      HTTPResponse response = new Router(getRoutes()).route(request);
-      new Writer().write(connection, response.toString());
+      HTTPResponse response = new Router(routes).route(request);
+      new Writer().write(connection, response.toBytes());
       connection.close();
     }
   }
 
   private List<Routable> getRoutes() {
-    return Arrays.asList(
+    List<Routable> customRoutes = new ArrayList<>(Arrays.asList(
         new Route("/simple_get", "GET", "ExampleController", "empty"),
         new Route("/simple_get", "HEAD", "ExampleController", "empty"),
         new Route("/get_with_body", "HEAD", "ExampleController", "empty"),
@@ -29,7 +39,42 @@ public class Server {
         new Route("/method_options2", "OPTIONS", "ExampleController", "empty"),
         new Route("/method_options2", "PUT", "ExampleController", "empty"),
         new Route("/method_options2", "POST", "ExampleController", "empty"),
+        new Route("/pickles", "GET", "ExampleController", "pickles"),
         new Redirect("/redirect", "GET", "/simple_get")
+    ));
+
+    customRoutes.addAll(defaultRoutes());
+    customRoutes.addAll(resourcesForCurrentDirectory());
+
+    return customRoutes;
+  }
+
+  private List<Routable> defaultRoutes() {
+    return Arrays.asList(
+        new Resource("/", "GET", "/index.html")
     );
+  }
+
+  private List<Routable> resourcesForCurrentDirectory() {
+    List<Routable> resources = new ArrayList();
+
+    BiPredicate<Path, BasicFileAttributes> isRegularFile =
+        (path, attrs) -> attrs.isRegularFile();
+
+    Path currentDir = Paths.get(".");
+    try (Stream<Path> stream =
+             Files.find(currentDir, Integer.MAX_VALUE, isRegularFile)) {
+
+      stream.forEach(path -> {
+        String resourcePath = "/" + Path.of(".").relativize(path).toString();
+        Resource resource = new Resource(resourcePath, "GET", resourcePath);
+        resources.add(resource);
+      });
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    return resources;
   }
 }

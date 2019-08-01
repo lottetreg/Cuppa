@@ -17,4 +17,13 @@ public class ExampleController extends BaseController {
         .setBody(this.request.getBody())
         .build();
   }
+
+  public HTTPResponse pickles() {
+    String imagePath = "/pickles.jpg";
+
+    return new HTTPResponse.Builder(200)
+        .setBody(readFile(imagePath))
+        .build()
+        .addHeader("Content-Type", getContentType(imagePath));
+  }
 }

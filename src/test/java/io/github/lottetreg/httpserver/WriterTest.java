@@ -25,7 +25,7 @@ public class WriterTest {
 
     Connectionable connection = new MockConnection();
 
-    new Writer().write(connection, "Some other string");
+    new Writer().write(connection, "Some other string".getBytes());
 
     assertEquals("Some other string", connection.getOutputStream().toString());
   }
@@ -43,7 +43,7 @@ public class WriterTest {
 
     exceptionRule.expect(Connection.FailedToGetOutputStream.class);
 
-    new Writer().write(connection, "");
+    new Writer().write(connection, new byte[] {});
   }
 
   @Test
@@ -59,7 +59,7 @@ public class WriterTest {
 
     exceptionRule.expect(Writer.FailedToWriteToConnection.class);
 
-    new Writer().write(connection, "");
+    new Writer().write(connection, new byte[] {});
   }
 
   private class BaseMockConnection implements Connectionable {

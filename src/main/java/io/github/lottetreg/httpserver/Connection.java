@@ -1,6 +1,5 @@
 package io.github.lottetreg.httpserver;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
@@ -23,8 +22,16 @@ public class Connection implements Connectionable {
   public OutputStream getOutputStream() {
     try {
       return this.socket.getOutputStream();
-    } catch(IOException e) {
+    } catch(Exception e) {
       throw new FailedToGetOutputStreamException(e);
+    }
+  }
+
+  public void close() {
+    try {
+      this.socket.close();
+    } catch(Exception e) {
+      throw new FailedToCloseConnection(e);
     }
   }
 
@@ -37,6 +44,12 @@ public class Connection implements Connectionable {
   static class FailedToGetOutputStreamException extends RuntimeException {
     FailedToGetOutputStreamException(Throwable cause) {
       super("Failed to get the output stream of the connection", cause);
+    }
+  }
+
+  static class FailedToCloseConnection extends RuntimeException {
+    FailedToCloseConnection(Throwable cause) {
+      super("Failed to close connection", cause);
     }
   }
 }

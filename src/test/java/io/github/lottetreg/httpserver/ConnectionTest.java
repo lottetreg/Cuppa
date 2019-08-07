@@ -48,7 +48,7 @@ public class ConnectionTest {
   }
 
   @Test
-  public void GetInputStreamThrowsAnException() {
+  public void getInputStreamThrowsAnException() {
     class MockSocket extends Socket {
       @Override
       public InputStream getInputStream() throws IOException {
@@ -65,7 +65,7 @@ public class ConnectionTest {
   }
 
   @Test
-  public void GetOutputStreamThrowsAnException() {
+  public void getOutputStreamThrowsAnException() {
     class MockSocket extends Socket {
       @Override
       public OutputStream getOutputStream() throws IOException {
@@ -79,5 +79,32 @@ public class ConnectionTest {
     exceptionRule.expectMessage("Failed to get the output stream of the connection");
 
     connection.getOutputStream();
+  }
+
+  @Test
+  public void itClosesTheSocket() {
+    Socket socket = new Socket();
+    Connection connection = new Connection(socket);
+
+    connection.close();
+
+    assertEquals(true, socket.isClosed());
+  }
+
+  @Test
+  public void closeThrowsAnExceptionIfItFailsToCloseTheSocket() {
+    class MockSocket extends Socket {
+      @Override
+      public void close() throws IOException {
+        throw new IOException();
+      }
+    }
+
+    Connection connection = new Connection(new MockSocket());
+
+    exceptionRule.expect(Connection.FailedToCloseConnection.class);
+    exceptionRule.expectMessage("Failed to close connection");
+
+    connection.close();
   }
 }

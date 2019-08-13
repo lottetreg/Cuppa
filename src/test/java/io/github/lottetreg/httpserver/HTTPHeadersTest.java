@@ -42,26 +42,36 @@ public class HTTPHeadersTest {
   }
 
   @Test
-  public void getHeaderOrDefaultReturnsTheHeaderIfPresent() {
+  public void getHeaderReturnsTheHeaderIfPresent() {
     List<String> headersList = Arrays.asList("Header 1: some value");
 
     HTTPHeaders headers = new HTTPHeaders(headersList);
 
-    assertEquals("some value", headers.getHeaderOrDefault("Header 1", ""));
+    assertEquals("some value", headers.getHeader("Header 1", ""));
   }
 
   @Test
-  public void getHeaderOrDefaultReturnsDefaultIfTheHeaderIsNotPresent() {
+  public void getHeaderReturnsDefaultIfTheHeaderIsNotPresent() {
     List<String> headersList = Arrays.asList();
 
     HTTPHeaders headers = new HTTPHeaders(headersList);
 
-    assertEquals("default", headers.getHeaderOrDefault("Header 1", "default"));
+    assertEquals("default", headers.getHeader("Header 1", "default"));
+  }
+
+  @Test
+  public void addHeaderAddsTheHeader() {
+    List<String> headersList = Arrays.asList();
+
+    HTTPHeaders headers = new HTTPHeaders(headersList);
+    headers.addHeader("Header 1", "some value");
+
+    assertEquals("some value", headers.getHeader("Header 1"));
   }
 
   @Test
   public void itThrowsAnExceptionIfAHeaderIsEmpty() {
-    exceptionRule.expect(HTTPHeaders.IncorrectlyFormattedHeaderException.class);
+    exceptionRule.expect(HTTPHeaders.IncorrectlyFormattedHeader.class);
     exceptionRule.expectMessage("Header is incorrectly formatted: ");
 
     new HTTPHeaders(Arrays.asList(""));
@@ -69,7 +79,7 @@ public class HTTPHeadersTest {
 
   @Test
   public void itThrowsAnExceptionIfAHeaderIsFormattedIncorrectly() {
-    exceptionRule.expect(HTTPHeaders.IncorrectlyFormattedHeaderException.class);
+    exceptionRule.expect(HTTPHeaders.IncorrectlyFormattedHeader.class);
     exceptionRule.expectMessage("Header is incorrectly formatted: Header 1:some value");
 
     new HTTPHeaders(Arrays.asList("Header 1:some value"));
@@ -77,7 +87,7 @@ public class HTTPHeadersTest {
 
   @Test
   public void itThrowsAnExceptionIfAHeaderIsMissingAName() {
-    exceptionRule.expect(HTTPHeaders.IncorrectlyFormattedHeaderException.class);
+    exceptionRule.expect(HTTPHeaders.IncorrectlyFormattedHeader.class);
     exceptionRule.expectMessage("Header is incorrectly formatted: : some value");
 
     new HTTPHeaders(Arrays.asList(": some value"));
@@ -85,7 +95,7 @@ public class HTTPHeadersTest {
 
   @Test
   public void itThrowsAnExceptionIfAHeaderIsMissingAValue() {
-    exceptionRule.expect(HTTPHeaders.IncorrectlyFormattedHeaderException.class);
+    exceptionRule.expect(HTTPHeaders.IncorrectlyFormattedHeader.class);
     exceptionRule.expectMessage("Header is incorrectly formatted: Header 1: ");
 
     new HTTPHeaders(Arrays.asList("Header 1: "));

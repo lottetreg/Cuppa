@@ -5,5 +5,6 @@ import java.io.OutputStream;
 
 public interface Connectionable {
   InputStream getInputStream();
+
   OutputStream getOutputStream();
 }

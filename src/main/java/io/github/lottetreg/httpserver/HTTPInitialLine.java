@@ -7,31 +7,31 @@ public class HTTPInitialLine {
   private String whiteSpace = "\\s";
 
   HTTPInitialLine(String initialLine) {
-      String[] splitInitialLine = initialLine.split(whiteSpace);
+    String[] splitInitialLine = initialLine.split(whiteSpace);
 
-      if(splitInitialLine.length != 3) {
-        throw new IncorrectlyFormattedInitialLineException(initialLine);
-      }
+    if (splitInitialLine.length != 3) {
+      throw new IncorrectlyFormattedInitialLine(initialLine);
+    }
 
-      this.method = getMethod(splitInitialLine);
-      this.URI = getURI(splitInitialLine);
-      this.HTTPVersion = getHTTPVersion(splitInitialLine);
+    this.method = splitInitialLine[0];
+    this.URI = splitInitialLine[1];
+    this.HTTPVersion = splitInitialLine[2];
   }
 
-  private String getMethod(String[] splitInitialLine) {
-    return splitInitialLine[0];
+  public String getMethod() {
+    return this.method;
   }
 
-  private String getURI(String[] splitInitialLine) {
-    return splitInitialLine[1];
+  public String getURI() {
+    return this.URI;
   }
 
-  private String getHTTPVersion(String[] splitInitialLine) {
-    return splitInitialLine[2];
+  public String getHTTPVersion() {
+    return this.HTTPVersion;
   }
 
-  static class IncorrectlyFormattedInitialLineException extends RuntimeException {
-    IncorrectlyFormattedInitialLineException(String initialLine) {
+  static class IncorrectlyFormattedInitialLine extends RuntimeException {
+    IncorrectlyFormattedInitialLine(String initialLine) {
       super("Initial line is incorrectly formatted: " + initialLine);
     }
   }

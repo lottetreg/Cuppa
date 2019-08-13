@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -29,14 +28,13 @@ public class HTTPRequestTest {
   @Test
   public void getHeaderReturnsNullIfTheHeaderDoesNotExist() {
     HTTPInitialLine initialLine = new HTTPInitialLine("GET / HTTP/1.0");
-    HTTPHeaders headers = new HTTPHeaders(Arrays.asList());
+    HTTPHeaders headers = new HTTPHeaders();
 
     HTTPRequest request = new HTTPRequest(initialLine, headers);
 
     assertEquals(null, request.getHeader("Header 1"));
   }
 
-  // hide away irrelevant but necessary initialLine
   @Test
   public void getContentLengthReturnsTheContentLength() {
     HTTPInitialLine initialLine = new HTTPInitialLine("GET / HTTP/1.0");
@@ -50,7 +48,7 @@ public class HTTPRequestTest {
   @Test
   public void getContentLengthReturns0IfTheContentLengthDoesNotExist() {
     HTTPInitialLine initialLine = new HTTPInitialLine("GET / HTTP/1.0");
-    HTTPHeaders headers = new HTTPHeaders(Arrays.asList());
+    HTTPHeaders headers = new HTTPHeaders();
 
     HTTPRequest request = new HTTPRequest(initialLine, headers);
 
@@ -62,7 +60,7 @@ public class HTTPRequestTest {
     HTTPInitialLine initialLine = new HTTPInitialLine("GET / HTTP/1.0");
     HTTPHeaders headers = new HTTPHeaders(Arrays.asList("Content-Length: Not a Number"));
 
-    exceptionRule.expect(HTTPRequest.InvalidContentLengthException.class);
+    exceptionRule.expect(HTTPRequest.InvalidContentLength.class);
     exceptionRule.expectMessage("Invalid content length header: Not a Number");
 
     new HTTPRequest(initialLine, headers).getContentLength();
@@ -71,11 +69,11 @@ public class HTTPRequestTest {
   @Test
   public void itHasABody() {
     HTTPInitialLine initialLine = new HTTPInitialLine("GET / HTTP/1.0");
-    HTTPHeaders headers = new HTTPHeaders(Arrays.asList());
+    HTTPHeaders headers = new HTTPHeaders();
     String body = "some body";
 
     HTTPRequest request = new HTTPRequest(initialLine, headers, body);
 
-    assertEquals("some body", request.body);
+    assertEquals("some body", request.getBody());
   }
 }

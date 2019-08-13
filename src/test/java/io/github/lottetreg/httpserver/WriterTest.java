@@ -14,7 +14,7 @@ public class WriterTest {
 
   @Test
   public void itWritesToTheConnection() {
-    class MockConnection extends BaseMockConnection{
+    class MockConnection extends BaseMockConnection {
       private ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
       @Override
@@ -35,13 +35,13 @@ public class WriterTest {
     class MockConnection extends BaseMockConnection {
       @Override
       public OutputStream getOutputStream() {
-        throw new Connection.FailedToGetOutputStreamException(new Throwable());
+        throw new Connection.FailedToGetOutputStream(new Throwable());
       }
     }
 
     Connectionable connection = new MockConnection();
 
-    exceptionRule.expect(Connection.FailedToGetOutputStreamException.class);
+    exceptionRule.expect(Connection.FailedToGetOutputStream.class);
 
     new Writer().write(connection, "");
   }
@@ -57,7 +57,7 @@ public class WriterTest {
 
     Connectionable connection = new MockConnection();
 
-    exceptionRule.expect(Writer.FailedToWriteToConnectionException.class);
+    exceptionRule.expect(Writer.FailedToWriteToConnection.class);
 
     new Writer().write(connection, "");
   }
@@ -68,7 +68,7 @@ public class WriterTest {
     }
 
     public InputStream getInputStream() {
-      return new ByteArrayInputStream(new byte[] {});
+      return new ByteArrayInputStream(new byte[]{});
     }
   }
 }

@@ -8,15 +8,15 @@ public class Writer {
       OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
       writer.write(output, 0, output.length());
       writer.flush();
-    } catch (Connection.FailedToGetOutputStreamException e) {
+    } catch (Connection.FailedToGetOutputStream e) {
       throw e;
     } catch (Exception e) {
-      throw new FailedToWriteToConnectionException(e);
+      throw new FailedToWriteToConnection(e);
     }
   }
 
-  static class FailedToWriteToConnectionException extends RuntimeException {
-    FailedToWriteToConnectionException(Throwable cause) {
+  static class FailedToWriteToConnection extends RuntimeException {
+    FailedToWriteToConnection(Throwable cause) {
       super("Failed to write to the connection", cause);
     }
   }

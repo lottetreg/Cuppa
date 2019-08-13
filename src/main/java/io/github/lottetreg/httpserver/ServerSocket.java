@@ -14,12 +14,12 @@ public class ServerSocket {
       Socket socket = this.serverSocket.accept();
       return new Connection(socket);
     } catch (Exception e) {
-      throw new FailedToAcceptConnectionException(e);
+      throw new FailedToAcceptConnection(e);
     }
   }
 
-  static class FailedToAcceptConnectionException extends RuntimeException {
-    FailedToAcceptConnectionException(Throwable cause) {
+  static class FailedToAcceptConnection extends RuntimeException {
+    FailedToAcceptConnection(Throwable cause) {
       super("Failed to accept connection", cause);
     }
   }

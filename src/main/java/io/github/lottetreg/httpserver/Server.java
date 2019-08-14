@@ -17,13 +17,26 @@ public class Server {
     List<Routable> routes = getRoutes();
 
     while ((connection = serverSocket.acceptConnection()) != null) {
-      // handle 400s first
-
       HTTPResponse response = new HTTPResponse.Builder(500).build();
+
+      // handle 400s next; need to validate request
+
       try {
+        Router router = new Router(routes);
         HTTPRequest request = new Reader().read(connection);
+
         try {
-          response = new Router(routes).route(request);
+          response = router.route(request);
+
+        } catch (Router.NoMatchingPath | Routable.MissingResource e) {
+          e.printStackTrace();
+          response = new HTTPResponse.Builder(404).build();
+
+        } catch (Router.NoMatchingMethodForPath e) {
+          e.printStackTrace();
+          response = new HTTPResponse.Builder(405).build()
+              .addHeader("Allow", router.getAllowedMethods(request));
+
         } catch (Throwable e) {
           e.printStackTrace();
         }

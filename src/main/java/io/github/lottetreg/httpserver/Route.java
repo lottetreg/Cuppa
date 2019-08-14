@@ -23,7 +23,7 @@ public class Route extends BaseRoute {
     this.controllersPackage = controllersPackage;
   }
 
-  public HTTPResponse getResponse(HTTPRequest request) {
+  public Response getResponse(HTTPRequest request) {
     String controllerName = this.controllersPackage + "." + getControllerName();
     String actionName = getActionName();
 
@@ -33,7 +33,7 @@ public class Route extends BaseRoute {
       Object controller = constructor.newInstance(request);
       Method action = controllerClass.getMethod(actionName);
 
-      return (HTTPResponse) action.invoke(controller);
+      return (Response) action.invoke(controller);
 
     } catch (ClassNotFoundException e) {
       throw new MissingController(controllerName);

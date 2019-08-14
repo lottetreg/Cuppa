@@ -5,6 +5,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.util.Arrays;
+import java.util.HashMap;
+
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.*;
 
 public class RouteTest {
@@ -64,21 +68,19 @@ public class RouteTest {
       super(request);
     }
 
-    public HTTPResponse empty() {
-      return new HTTPResponse.Builder(200).build();
+    public Response empty() {
+      return new Response(200);
     }
 
-    public HTTPResponse echo() {
-      return new HTTPResponse.Builder(200)
-          .setBody(this.request.getBody())
-          .build();
+    public Response echo() {
+      return new Response(200, this.request.getBody().getBytes());
     }
 
-    public HTTPResponse missingResource() {
+    public Response missingResource() {
       throw new FileHelpers.MissingFile("/missing.html", new Throwable());
     }
 
-    public HTTPResponse failure() {
+    public Response failure() {
       throw new RuntimeException(new Throwable());
     }
   }
@@ -93,9 +95,11 @@ public class RouteTest {
 
     Route route = new Route("", "", "RouteTest$Controller", "empty", this.controllersPackage);
 
-    HTTPResponse response = route.getResponse(request);
+    Response response = route.getResponse(request);
 
-    assertEquals("HTTP/1.0 200 OK\r\n\r\n", response.toString());
+    assertEquals(200, response.getStatusCode());
+    assertEquals("", new String(response.getBody()));
+    assertEquals(new HashMap<>(), response.getHeaders());
   }
 
   @Test
@@ -108,22 +112,11 @@ public class RouteTest {
 
     Route route = new Route("", "", "RouteTest$Controller", "echo", this.controllersPackage);
 
-    HTTPResponse response = route.getResponse(request);
+    Response response = route.getResponse(request);
 
-    assertEquals("HTTP/1.0 200 OK\r\n\r\nsome body to love", response.toString());
-  }
-
-  @Test
-  public void itReturnsA404ResponseIfTheViewIsMissing() {
-    HTTPRequest request = new HTTPRequest(
-        new HTTPInitialLine("GET / HTTP/1.0"),
-        new HTTPHeaders());
-
-    Route route = new Route("", "", "RouteTest$Controller", "empty", this.controllersPackage);
-
-    HTTPResponse response = route.getResponse(request);
-
-    assertEquals("HTTP/1.0 200 OK\r\n\r\n", response.toString());
+    assertEquals(200, response.getStatusCode());
+    assertEquals("some body to love", new String(response.getBody()));
+    assertEquals(new HashMap<>(), response.getHeaders());
   }
 
   @Test

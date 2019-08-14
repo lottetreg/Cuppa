@@ -1,6 +1,7 @@
 package io.github.lottetreg.httpserver;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -12,14 +13,13 @@ public class Router {
     this.routes = routes;
   }
 
-  public HTTPResponse route(HTTPRequest request)
-      throws NoMatchingPath, NoMatchingMethodForPath { // should include Routable.MissingResource and Routable.FailedControllerAction too?
+  public Response route(HTTPRequest request)
+      throws NoMatchingPath, NoMatchingMethodForPath, Routable.MissingResource, Routable.FailedToGetResponse {
 
     Routable route = findMatchingRoute(request);
 
     if (route.getMethod().equals("OPTIONS")) {
-      return new HTTPResponse.Builder(200).build()
-          .addHeader("Allow", getAllowedMethods(request));
+      return new Response(200, Map.of("Allow", getAllowedMethods(request)));
     } else {
       return route.getResponse(request);
     }

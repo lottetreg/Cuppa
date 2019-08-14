@@ -5,9 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 
@@ -17,7 +15,7 @@ public class Server {
     List<Routable> routes = getRoutes();
 
     while ((connection = serverSocket.acceptConnection()) != null) {
-      HTTPResponse response = new HTTPResponse.Builder(500).build();
+      Response response = new Response(500);
 
       // handle 400s next; need to validate request
 
@@ -30,22 +28,31 @@ public class Server {
 
         } catch (Router.NoMatchingPath | Routable.MissingResource e) {
           e.printStackTrace();
-          response = new HTTPResponse.Builder(404).build();
+          response = new Response(404);
 
         } catch (Router.NoMatchingMethodForPath e) {
           e.printStackTrace();
-          response = new HTTPResponse.Builder(405).build()
-              .addHeader("Allow", router.getAllowedMethods(request));
+          response = new Response(405, Map.of("Allow", router.getAllowedMethods(request)));
 
         } catch (Throwable e) {
           e.printStackTrace();
         }
+
       } catch (Throwable e) {
         e.printStackTrace();
+
       } finally {
-        writeToConnection(connection, response.toBytes());
+        HTTPResponse httpResponse = createHTTPResponse(response);
+        writeToConnection(connection, httpResponse.toBytes());
       }
     }
+  }
+
+  private HTTPResponse createHTTPResponse(Response response) {
+    return new HTTPResponse.Builder(response.getStatusCode())
+        .setBody(response.getBody())
+        .setHeaders(new HTTPHeaders(response.getHeaders()))
+        .build();
   }
 
   private void writeToConnection(Connection connection, byte[] response) {

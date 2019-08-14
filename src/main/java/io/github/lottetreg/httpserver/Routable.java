@@ -5,7 +5,7 @@ public interface Routable {
   String getMethod();
   Boolean hasPath(String path);
   Boolean hasMethod(String method);
-  HTTPResponse getResponse(HTTPRequest request);
+  Response getResponse(HTTPRequest request);
 
   class MissingResource extends RuntimeException {
     MissingResource(String resourcePath, Throwable cause) {

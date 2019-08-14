@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import static junit.framework.TestCase.assertTrue;
@@ -16,9 +17,7 @@ public class RouterTest {
       super(path, method);
     }
 
-    public HTTPResponse getResponse(HTTPRequest request) {
-      return new HTTPResponse.Builder(200).build();
-    }
+    public Response getResponse(HTTPRequest request) { return new Response(200); }
   }
 
   @Rule
@@ -32,9 +31,11 @@ public class RouterTest {
 
     List<Routable> routes = Arrays.asList(new MockRoute("/", "GET"));
 
-    HTTPResponse response = new Router(routes).route(request);
+    Response response = new Router(routes).route(request);
 
-    assertEquals("HTTP/1.0 200 OK\r\n\r\n", response.toString());
+    assertEquals(200, response.getStatusCode());
+    assertEquals("", new String(response.getBody()));
+    assertEquals(new HashMap<>(), response.getHeaders());
   }
 
   @Test
@@ -47,10 +48,10 @@ public class RouterTest {
         new MockRoute("/", "GET"),
         new MockRoute("/", "OPTIONS"));
 
-    HTTPResponse response = new Router(routes).route(request);
+    Response response = new Router(routes).route(request);
 
     List<String> allowedMethods = Arrays.asList(response.getHeaders()
-        .getHeader("Allow")
+        .get("Allow")
         .split(", "));
 
     assertTrue(allowedMethods.stream()

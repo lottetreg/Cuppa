@@ -1,5 +1,7 @@
 package io.github.lottetreg.httpserver;
 
+import java.util.Map;
+
 public class Resource extends BaseRoute {
   String resourcePath;
 
@@ -8,14 +10,12 @@ public class Resource extends BaseRoute {
     this.resourcePath = resourcePath;
   }
 
-  public HTTPResponse getResponse(HTTPRequest request) {
+  public Response getResponse(HTTPRequest request) {
     try {
       String contentType = FileHelpers.getContentType(getResourcePath());
       byte[] fileContents = FileHelpers.readFile(getResourcePath());
 
-      return new HTTPResponse.Builder(200)
-          .setBody(fileContents).build()
-          .addHeader("Content-Type", contentType);
+      return new Response(200, fileContents, Map.of("Content-Type", contentType));
 
     } catch (FileHelpers.MissingFile e) {
       throw new MissingResource(getResourcePath(), e);

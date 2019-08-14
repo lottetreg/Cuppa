@@ -9,18 +9,26 @@ public class HTTPHeaders {
   private HashMap<String, String> headers;
   private String headerSeparator = ": ";
 
-  HTTPHeaders(List<String> headersList) {
+  public HTTPHeaders(List<String> headersList) {
     this.headers = new HashMap<>(headersList.stream().collect(toMap(
         header -> getHeaderName(header),
         header -> getHeaderValue(header))));
   }
 
-  HTTPHeaders() {
+  public HTTPHeaders(HashMap<String, String> headers) {
+    this.headers = headers;
+  }
+
+  public HTTPHeaders() {
     this.headers = new HashMap<>();
   }
 
   public HashMap<String, String> getHeaders() {
     return this.headers;
+  }
+
+  public void setHeaders(HashMap<String, String> headers) {
+    this.headers = headers;
   }
 
   public String getHeader(String headerName) {

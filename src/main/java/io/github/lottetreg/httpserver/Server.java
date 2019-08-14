@@ -5,9 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 
@@ -17,12 +15,52 @@ public class Server {
     List<Routable> routes = getRoutes();
 
     while ((connection = serverSocket.acceptConnection()) != null) {
-      HTTPRequest request = new Reader().read(connection);
-      HTTPResponse response = new Router(routes).route(request);
-      new Writer().write(connection, response.toBytes());
+      Response response = new Response(500);
+
+      try {
+        Router router = new Router(routes);
+        HTTPRequest request = new Reader().read(connection);
+
+        try {
+          response = router.route(request);
+
+        } catch (Router.NoMatchingPath | Routable.MissingResource e) {
+          e.printStackTrace();
+          response = new Response(404);
+
+        } catch (Router.NoMatchingMethodForPath e) {
+          e.printStackTrace();
+          response = new Response(405, Map.of("Allow", router.getAllowedMethods(request)));
+        }
+
+      } catch (Throwable e) {
+        e.printStackTrace();
+
+      } finally {
+        HTTPResponse httpResponse = createHTTPResponse(response);
+        writeToConnection(connection, httpResponse.toBytes());
+      }
+    }
+  }
+
+  private HTTPResponse createHTTPResponse(Response response) {
+    return new HTTPResponse.Builder(response.getStatusCode())
+        .setBody(response.getBody())
+        .setHeaders(new HTTPHeaders(response.getHeaders()))
+        .build();
+  }
+
+  private void writeToConnection(Connection connection, byte[] response) {
+    try {
+      new Writer().write(connection, response);
+    } catch (Exception e) {
+      e.printStackTrace();
+    } finally {
       connection.close();
     }
   }
+
+  // Every route should get HEAD and OPTIONS created by default?
 
   private List<Routable> getRoutes() {
     List<Routable> customRoutes = new ArrayList<>(Arrays.asList(
@@ -40,6 +78,7 @@ public class Server {
         new Route("/method_options2", "PUT", "ExampleController", "empty"),
         new Route("/method_options2", "POST", "ExampleController", "empty"),
         new Route("/pickles", "GET", "ExampleController", "pickles"),
+        new Route("/pickles_with_header", "GET", "ExampleController", "picklesWithHeader"),
         new Redirect("/redirect", "GET", "/simple_get")
     ));
 

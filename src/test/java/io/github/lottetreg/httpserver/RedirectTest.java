@@ -33,9 +33,10 @@ public class RedirectTest {
 
     Redirect redirect = new Redirect("", "", "/some_other_path");
 
-    HTTPResponse response = redirect.getResponse(request);
+    Response response = redirect.getResponse(request);
 
     assertEquals(301, response.getStatusCode());
-    assertEquals("http://www.example.com/some_other_path", response.getHeaders().getHeader("Location"));
+    assertEquals("", new String(response.getBody()));
+    assertEquals("http://www.example.com/some_other_path", response.getHeaders().get("Location"));
   }
 }

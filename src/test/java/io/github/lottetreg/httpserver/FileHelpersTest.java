@@ -4,20 +4,22 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.nio.file.Path;
+
 import static org.junit.Assert.assertEquals;
 
 public class FileHelpersTest {
   @Rule
   public ExpectedException exceptionRule = ExpectedException.none();
 
-  private String pathFor(String fileName) {
+  private Path pathFor(String fileName) {
     String supportDirectoryPath = "/src/test/java/io/github/lottetreg/httpserver/support";
-    return supportDirectoryPath + fileName;
+    return Path.of(supportDirectoryPath + fileName);
   }
 
   @Test
   public void readFileReadsAFileInTheCurrentDirectoryIntoAByteArray() {
-    String filePath = pathFor("/index.html");
+    Path filePath = pathFor("/index.html");
 
     byte[] fileContents = FileHelpers.readFile(filePath);
 
@@ -26,7 +28,7 @@ public class FileHelpersTest {
 
   @Test
   public void readFileThrowsAnExceptionIfTheFileIsMissing() {
-    String filePath = pathFor("/missing.html");
+    Path filePath = pathFor("/missing.html");
 
     exceptionRule.expect(FileHelpers.MissingFile.class);
     exceptionRule.expectMessage("/missing.html");
@@ -36,36 +38,36 @@ public class FileHelpersTest {
 
   @Test
   public void getContentTypeGetsTheContentTypeOfAPlainTextLFile() {
-    assertEquals("text/plain", FileHelpers.getContentType("/index.txt"));
+    assertEquals("text/plain", FileHelpers.getContentType(Path.of("/index.txt")));
   }
 
   @Test
   public void getContentTypeGetsTheContentTypeOfAnHTMLFile() {
-    assertEquals("text/html", FileHelpers.getContentType("/index.html"));
+    assertEquals("text/html", FileHelpers.getContentType(Path.of("/index.html")));
   }
 
   @Test
   public void getContentTypeGetsTheContentTypeOfAJPEGFile() {
-    assertEquals("image/jpeg", FileHelpers.getContentType("/pickles.jpg"));
+    assertEquals("image/jpeg", FileHelpers.getContentType(Path.of("/pickles.jpg")));
   }
 
   @Test
   public void getContentTypeGetsTheContentTypeOfAPNGFile() {
-    assertEquals("image/png", FileHelpers.getContentType("/pickles.png"));
+    assertEquals("image/png", FileHelpers.getContentType(Path.of("/pickles.png")));
   }
 
   @Test
   public void getContentTypeGetsTheContentTypeOfAGIFFile() {
-    assertEquals("image/gif", FileHelpers.getContentType("/pickles.gif"));
+    assertEquals("image/gif", FileHelpers.getContentType(Path.of("/pickles.gif")));
   }
 
   @Test
   public void getContentTypeGetsTheContentTypeOfAnMP3File() {
-    assertEquals("audio/mpeg", FileHelpers.getContentType("/pickles.mp3"));
+    assertEquals("audio/mpeg", FileHelpers.getContentType(Path.of("/pickles.mp3")));
   }
 
   @Test
   public void getContentTypeGetsTheContentTypeOfAnMP4File() {
-    assertEquals("video/mp4", FileHelpers.getContentType("/pickles.mp4"));
+    assertEquals("video/mp4", FileHelpers.getContentType(Path.of("/pickles.mp4")));
   }
 }

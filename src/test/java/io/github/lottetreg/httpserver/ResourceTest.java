@@ -38,17 +38,19 @@ public class ResourceTest {
   public void itReturnsA200ResponseWithTheResource() {
     Resource resource = new Resource("", "", "/src/test/java/io/github/lottetreg/httpserver/support/index.html");
 
-    HTTPResponse response = resource.getResponse(emptyHTTPRequest());
+    Response response = resource.getResponse(emptyHTTPRequest());
 
-    assertEquals("HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n<h1>Hello, World!</h1>\n", response.toString());
+    assertEquals(200, response.getStatusCode());
+    assertEquals("<h1>Hello, World!</h1>\n", new String(response.getBody()));
+    assertEquals("text/html", response.getHeaders().get("Content-Type"));
   }
 
   @Test
   public void itThrowsAnExceptionIfTheResourceIsMissing() {
-    Resource resource = new Resource("", "", "/missing_resource.html");
+    Resource resource = new Resource("", "", "/missing.html");
 
     exceptionRule.expect(Resource.MissingResource.class);
-    exceptionRule.expectMessage("Could not find /missing_resource.html");
+    exceptionRule.expectMessage("/missing.html");
 
     resource.getResponse(emptyHTTPRequest());
   }

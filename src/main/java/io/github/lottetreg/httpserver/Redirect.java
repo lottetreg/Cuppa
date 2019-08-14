@@ -1,5 +1,7 @@
 package io.github.lottetreg.httpserver;
 
+import java.util.Map;
+
 public class Redirect extends BaseRoute {
   private String redirectPath;
 
@@ -8,11 +10,10 @@ public class Redirect extends BaseRoute {
     this.redirectPath = redirectPath;
   }
 
-  public HTTPResponse getResponse(HTTPRequest request) {
+  public Response getResponse(HTTPRequest request) {
     String URI = "http://" + request.getHeader("Host") + getRedirectPath();
 
-    return new HTTPResponse.Builder(301).build()
-        .addHeader("Location", URI);
+    return new Response(301, Map.of("Location", URI));
   }
 
   public String getRedirectPath() {

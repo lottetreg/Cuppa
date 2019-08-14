@@ -122,29 +122,4 @@ public class RouterTest {
     assertEquals(405, response.getStatusCode());
     assertEquals("No method POST for path /", ((MockOut) out).message);
   }
-
-  @Test
-  public void itReturns500ResponseAndLogsTheErrorForAnyOtherExceptions() {
-    class BrokenRoute extends BaseRoute {
-      BrokenRoute(String path, String method) {
-        super(path, method);
-      }
-
-      public HTTPResponse getResponse(HTTPRequest request) {
-        throw new RuntimeException("Something went wrong");
-      }
-    }
-
-    HTTPRequest request = new HTTPRequest(
-        new HTTPInitialLine("GET / HTTP/1.0"),
-        new HTTPHeaders());
-
-    List<Routable> routes = Arrays.asList(new BrokenRoute("/", "GET"));
-
-    Outable out = new MockOut();
-    HTTPResponse response = new Router(routes, out).route(request);
-
-    assertEquals("HTTP/1.0 500 Internal Server Error\r\n\r\n", response.toString());
-    assertEquals("Something went wrong", ((MockOut) out).message);
-  }
 }

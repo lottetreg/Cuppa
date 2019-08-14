@@ -38,10 +38,6 @@ public class Router {
       this.out.println(e.getMessage());
       return new HTTPResponse.Builder(405).build()
           .addHeader("Allow", getAllowedMethods(request));
-
-    } catch (Exception e) {
-      this.out.println(e.getMessage());
-      return new HTTPResponse.Builder(500).build();
     }
   }
 

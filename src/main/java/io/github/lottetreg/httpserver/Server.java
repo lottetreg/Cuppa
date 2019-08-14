@@ -17,10 +17,22 @@ public class Server {
     List<Routable> routes = getRoutes();
 
     while ((connection = serverSocket.acceptConnection()) != null) {
-      HTTPRequest request = new Reader().read(connection);
-      HTTPResponse response = new Router(routes).route(request);
-      new Writer().write(connection, response.toBytes());
-      connection.close();
+      HTTPResponse response;
+      try {
+        HTTPRequest request = new Reader().read(connection);
+        response = new Router(routes).route(request);
+      } catch (Exception e) { // Throwable? http://wiki.c2.com/?DontCatchRuntimeExceptions
+        e.printStackTrace();
+        response = new HTTPResponse.Builder(500).build();
+      }
+
+      try {
+        new Writer().write(connection, response.toBytes());
+      } catch (Exception e) {
+        e.printStackTrace();
+      } finally {
+        connection.close();
+      }
     }
   }
 

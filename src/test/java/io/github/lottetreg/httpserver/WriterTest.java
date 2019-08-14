@@ -31,7 +31,7 @@ public class WriterTest {
   }
 
   @Test
-  public void itReThrowsAFailedToGetOutputStreamException() {
+  public void itThrowsANewExceptionIfItFailsToGetOutputStream() {
     class MockConnection extends BaseMockConnection {
       @Override
       public OutputStream getOutputStream() {
@@ -41,17 +41,24 @@ public class WriterTest {
 
     Connectionable connection = new MockConnection();
 
-    exceptionRule.expect(Connection.FailedToGetOutputStream.class);
+    exceptionRule.expect(Writer.FailedToWriteToConnection.class);
 
     new Writer().write(connection, new byte[] {});
   }
 
   @Test
-  public void itThrowsAnExceptionIfItFails() {
+  public void itThrowsANewExceptionIfItFailsWithAnIOException() {
+    class MockOutputStream extends ByteArrayOutputStream {
+      @Override
+      public void write(byte[] output) throws IOException {
+        throw new IOException();
+      }
+    }
+
     class MockConnection extends BaseMockConnection {
       @Override
       public OutputStream getOutputStream() {
-        throw new RuntimeException();
+        return new MockOutputStream();
       }
     }
 

@@ -31,7 +31,7 @@ public class Router {
       }
 
     } catch (NoMatchingPath | Routable.MissingResource e) {
-      this.out.println(e.getMessage());
+      this.out.println(e.getMessage()); // throw new exception instead and build HTTPResponse in Server?
       return new HTTPResponse.Builder(404).build();
 
     } catch (NoMatchingMethodForPath e) {

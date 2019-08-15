@@ -62,6 +62,8 @@ public class RouteTest {
     assertFalse(route.hasMethod("POST"));
   }
 
+  // Move all these tests into BaseController test, test addHeader() too
+
   public static class Controller extends BaseController {
     public Controller(HTTPRequest request) {
       super(request);
@@ -70,7 +72,7 @@ public class RouteTest {
     public void empty() {}
 
     public String echo() {
-      return this.request.getBody();
+      return getRequest().getBody();
     }
 
     public void missingResource() {

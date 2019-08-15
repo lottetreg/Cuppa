@@ -52,16 +52,4 @@ public class Route extends BaseRoute {
       super(controller, cause);
     }
   }
-
-  static class MissingControllerAction extends RuntimeException {
-    MissingControllerAction(String action, String controller) {
-      super("Could not find " + action + " in " + controller);
-    }
-  }
-
-  static class FailedControllerAction extends RuntimeException {
-    FailedControllerAction(String action, String controller, Throwable cause) {
-      super("Failed to complete " + action + " in " + controller, cause);
-    }
-  }
 }

@@ -10,7 +10,7 @@ public class ExampleController extends BaseController {
   public void empty() {}
 
   public String echo() {
-    return this.request.getBody();
+    return getRequest().getBody();
   }
 
   public Path pickles() {
@@ -18,7 +18,7 @@ public class ExampleController extends BaseController {
   }
 
   public Path picklesWithHeader() {
-    this.headers.put("Some-Header", "HI"); // addHeader()
+    addHeader("Some-Header", "HI");
     return Path.of("/pickles.jpg");
   }
 }

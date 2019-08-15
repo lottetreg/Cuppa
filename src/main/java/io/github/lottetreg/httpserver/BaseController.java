@@ -5,16 +5,27 @@ import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.util.HashMap;
 
+import static io.github.lottetreg.httpserver.FileHelpers.getContentType;
+import static io.github.lottetreg.httpserver.FileHelpers.readFile;
+
 public class BaseController {
-  public HTTPRequest request;
-  public HashMap<String, String> headers;
+  private HTTPRequest request;
+  private HashMap<String, String> headers;
 
   public BaseController(HTTPRequest request) {
     this.request = request;
     this.headers = new HashMap<>();
   }
 
-  public Response call(String actionName) throws MissingResource, FailedControllerAction {
+  HTTPRequest getRequest() {
+    return this.request;
+  }
+
+  void addHeader(String key, String value) {
+    this.headers.put(key, value);
+  }
+
+  Response call(String actionName) {
     try {
       Method action = getClass().getMethod(actionName);
       Object result = action.invoke(this);
@@ -27,28 +38,38 @@ public class BaseController {
 
       } else if (result instanceof Path) {
         Path filePath = (Path) result;
-        this.headers.put("Content-Type", FileHelpers.getContentType(filePath));
-        body = FileHelpers.readFile(filePath);
+        this.headers.put("Content-Type", getContentType(filePath));
+        body = readFile(filePath);
       }
 
       return new Response(200, body, this.headers);
 
     } catch (NoSuchMethodException e) {
-      throw new RuntimeException("Can't find action in controller");
+      throw new MissingControllerAction(actionName, e);
 
     } catch (InvocationTargetException e) {
-      throw wrappedActionInvocationException(e.getCause());
+      throw wrappedActionInvocationException(actionName, e.getCause());
 
     } catch (IllegalAccessException e) {
-      throw new RuntimeException("Action needs to be accessible");
+      throw new InaccessibleControllerAction(actionName, e);
     }
   }
 
-  private RuntimeException wrappedActionInvocationException(Throwable cause) {
-    if (cause instanceof FileHelpers.MissingFile) {
-      return new MissingResource(cause.getMessage(), cause);
-    } else {
-      return new FailedControllerAction(cause);
+  private RuntimeException wrappedActionInvocationException(String action, Throwable cause) {
+    return cause instanceof FileHelpers.MissingFile
+        ? new MissingResource(cause.getMessage(), cause)
+        : new FailedControllerAction(action, cause);
+  }
+
+  static class MissingControllerAction extends RuntimeException {
+    MissingControllerAction(String action, Throwable cause) {
+      super(action, cause);
+    }
+  }
+
+  static class InaccessibleControllerAction extends RuntimeException {
+    InaccessibleControllerAction(String action, Throwable cause) {
+      super(action, cause);
     }
   }
 
@@ -59,8 +80,8 @@ public class BaseController {
   }
 
   static class FailedControllerAction extends RuntimeException {
-    FailedControllerAction(Throwable cause) {
-      super(cause);
+    FailedControllerAction(String action, Throwable cause) {
+      super(action, cause);
     }
   }
 }

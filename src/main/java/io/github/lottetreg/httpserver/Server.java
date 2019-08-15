@@ -70,6 +70,8 @@ public class Server {
     }
   }
 
+  // Every route should get HEAD and OPTIONS created by default
+
   private List<Routable> getRoutes() {
     List<Routable> customRoutes = new ArrayList<>(Arrays.asList(
         new Route("/simple_get", "GET", "ExampleController", "empty"),

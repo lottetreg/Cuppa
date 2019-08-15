@@ -28,10 +28,19 @@ public class Route extends BaseRoute {
       throw new MissingController(controllerName, e);
 
     } catch (NoSuchMethodException e) {
-      throw new RuntimeException("Can't find constructor for BaseController");
+      throw new MissingControllerConstructor(controllerName, e);
 
     } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
-      throw new RuntimeException("Failed to create new instance of BaseController");
+      throw new FailedToInstantiateController(controllerName, e);
+
+    } catch (BaseController.MissingResource e) {
+      throw new MissingResource(e.getMessage(), e);
+
+    } catch (BaseController.MissingControllerAction |
+        BaseController.InaccessibleControllerAction |
+        BaseController.ControllerActionFailed e) {
+
+      throw new ControllerActionFailed(e.getMessage(), e);
     }
   }
 
@@ -50,6 +59,24 @@ public class Route extends BaseRoute {
   static class MissingController extends RuntimeException {
     MissingController(String controller, Throwable cause) {
       super(controller, cause);
+    }
+  }
+
+  static class MissingControllerConstructor extends RuntimeException {
+    MissingControllerConstructor(String controller, Throwable cause) {
+      super(controller, cause);
+    }
+  }
+
+  static class FailedToInstantiateController extends RuntimeException {
+    FailedToInstantiateController(String controller, Throwable cause) {
+      super(controller, cause);
+    }
+  }
+
+  static class ControllerActionFailed extends RuntimeException {
+    ControllerActionFailed(String action, Throwable cause) {
+      super(action, cause);
     }
   }
 }

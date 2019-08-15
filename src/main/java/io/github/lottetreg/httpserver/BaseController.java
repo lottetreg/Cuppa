@@ -33,12 +33,12 @@ public class BaseController {
       byte[] body = new byte[]{};
 
       if (result instanceof String) {
-        this.headers.put("Content-Type", "text/plain");
+        addHeader("Content-Type", "text/plain");
         body = ((String) result).getBytes();
 
       } else if (result instanceof Path) {
         Path filePath = (Path) result;
-        this.headers.put("Content-Type", getContentType(filePath));
+        addHeader("Content-Type", getContentType(filePath));
         body = readFile(filePath);
       }
 
@@ -58,7 +58,7 @@ public class BaseController {
   private RuntimeException wrappedActionInvocationException(String action, Throwable cause) {
     return cause instanceof FileHelpers.MissingFile
         ? new MissingResource(cause.getMessage(), cause)
-        : new FailedControllerAction(action, cause);
+        : new ControllerActionFailed(action, cause);
   }
 
   static class MissingControllerAction extends RuntimeException {
@@ -79,8 +79,8 @@ public class BaseController {
     }
   }
 
-  static class FailedControllerAction extends RuntimeException {
-    FailedControllerAction(String action, Throwable cause) {
+  static class ControllerActionFailed extends RuntimeException {
+    ControllerActionFailed(String action, Throwable cause) {
       super(action, cause);
     }
   }

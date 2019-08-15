@@ -43,12 +43,17 @@ public class Server {
 
       } finally {
         HTTPResponse httpResponse = createHTTPResponse(response);
+
+        httpResponse.getHeaders().getHeaders().keySet().stream().forEach(headerKey ->
+            System.out.println(headerKey));
+
         writeToConnection(connection, httpResponse.toBytes());
       }
     }
   }
 
   private HTTPResponse createHTTPResponse(Response response) {
+    // use Optionals in Response?
     return new HTTPResponse.Builder(response.getStatusCode())
         .setBody(response.getBody())
         .setHeaders(new HTTPHeaders(response.getHeaders()))
@@ -81,6 +86,7 @@ public class Server {
         new Route("/method_options2", "PUT", "ExampleController", "empty"),
         new Route("/method_options2", "POST", "ExampleController", "empty"),
         new Route("/pickles", "GET", "ExampleController", "pickles"),
+        new Route("/pickles_with_header", "GET", "ExampleController", "picklesWithHeader"),
         new Redirect("/redirect", "GET", "/simple_get")
     ));
 

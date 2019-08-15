@@ -1,6 +1,4 @@
-package io.github.lottetreg.httpserver.controllers;
-
-import io.github.lottetreg.httpserver.HTTPRequest;
+package io.github.lottetreg.httpserver;
 
 import java.nio.file.Path;
 
@@ -16,6 +14,11 @@ public class ExampleController extends BaseController {
   }
 
   public Path pickles() {
+    return Path.of("/pickles.jpg");
+  }
+
+  public Path picklesWithHeader() {
+    this.headers.put("Some-Header", "HI"); // addHeader()
     return Path.of("/pickles.jpg");
   }
 }

@@ -2,6 +2,7 @@ package io.github.lottetreg.httpserver;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -15,8 +16,8 @@ public class HTTPHeaders {
         header -> getHeaderValue(header))));
   }
 
-  public HTTPHeaders(HashMap<String, String> headers) {
-    this.headers = headers;
+  public HTTPHeaders(Map<String, String> headers) {
+    this.headers = new HashMap<>(headers);
   }
 
   public HTTPHeaders() {
@@ -25,10 +26,6 @@ public class HTTPHeaders {
 
   public HashMap<String, String> getHeaders() {
     return this.headers;
-  }
-
-  public void setHeaders(HashMap<String, String> headers) {
-    this.headers = headers;
   }
 
   public String getHeader(String headerName) {

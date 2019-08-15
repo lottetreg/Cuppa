@@ -14,7 +14,7 @@ public class Router {
   }
 
   public Response route(HTTPRequest request)
-      throws NoMatchingPath, NoMatchingMethodForPath, Routable.MissingResource, Routable.FailedToGetResponse {
+      throws NoMatchingPath, NoMatchingMethodForPath, Routable.MissingResource, Routable.FailedToGetResponse { // do this? Wrap and throw?
 
     Routable route = findMatchingRoute(request);
 

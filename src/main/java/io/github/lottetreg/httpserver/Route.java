@@ -1,31 +1,20 @@
 package io.github.lottetreg.httpserver;
 
-import io.github.lottetreg.httpserver.controllers.BaseController;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class Route extends BaseRoute {
   private String controllerName;
   private String actionName;
-  private String controllersPackage;
 
   Route(String path, String method, String controllerName, String actionName) {
     super(path, method);
     this.controllerName = controllerName;
     this.actionName = actionName;
-    this.controllersPackage = "io.github.lottetreg.httpserver.controllers";
-  }
-
-  Route(String path, String method, String controllerName, String actionName, String controllersPackage) {
-    super(path, method);
-    this.controllerName = controllerName;
-    this.actionName = actionName;
-    this.controllersPackage = controllersPackage;
   }
 
   public Response getResponse(HTTPRequest request) {
-    String controllerName = this.controllersPackage + "." + getControllerName();
+    String controllerName = getCompleteControllerName();
     String actionName = getActionName();
 
     try {
@@ -36,25 +25,15 @@ public class Route extends BaseRoute {
       return controller.call(actionName);
 
     } catch (ClassNotFoundException e) {
-      throw new MissingController(controllerName);
+      throw new MissingController(controllerName, e);
 
     } catch (NoSuchMethodException e) {
-      throw new MissingControllerAction(actionName, controllerName);
+      throw new RuntimeException("Can't find constructor for BaseController");
 
-    } catch (InvocationTargetException e) {
-      if(e.getCause() instanceof FileHelpers.MissingFile) {
-        throw new MissingResource(e.getCause().getMessage(), e);
-      } else {
-        throw new FailedControllerAction(actionName, controllerName, e);
-      }
-
-    } catch (IllegalAccessException | InstantiationException e) {
-      throw new FailedToGetResponse(getPath(), getMethod(), e);
+    } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
+      throw new RuntimeException("Failed to create new instance of BaseController");
     }
   }
-
-  // IllegalAccessException - controller class needs to be public
-  // InstantiationException - could not create new controller instance
 
   public String getControllerName() {
     return this.controllerName;
@@ -64,9 +43,13 @@ public class Route extends BaseRoute {
     return this.actionName;
   }
 
+  public String getCompleteControllerName() {
+    return getClass().getPackageName() + "." + getControllerName();
+  }
+
   static class MissingController extends RuntimeException {
-    MissingController(String controller) {
-      super("Could not find " + controller);
+    MissingController(String controller, Throwable cause) {
+      super(controller, cause);
     }
   }
 

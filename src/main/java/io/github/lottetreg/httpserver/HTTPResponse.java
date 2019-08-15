@@ -33,11 +33,6 @@ public class HTTPResponse {
     return this.headers;
   }
 
-  public HTTPResponse addHeader(String headerName, String headerValue) {
-    this.headers.addHeader(headerName, headerValue);
-    return this;
-  }
-
   public String toString() {
     return new String(toBytes());
   }
@@ -65,8 +60,8 @@ public class HTTPResponse {
     Map<String, String> headers = this.headers.getHeaders();
 
     return headers.keySet().stream()
-        .map(key -> key + ": " + headers.get(key))
-        .reduce("", (header, acc) -> acc + header + this.CRLF);
+        .map(key -> key + ": " + headers.get(key) + this.CRLF)
+        .reduce("", (header, acc) -> acc + header);
   }
 
   private byte[] getBody() {

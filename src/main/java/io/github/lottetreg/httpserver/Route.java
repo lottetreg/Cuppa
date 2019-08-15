@@ -1,8 +1,9 @@
 package io.github.lottetreg.httpserver;
 
+import io.github.lottetreg.httpserver.controllers.BaseController;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 public class Route extends BaseRoute {
   private String controllerName;
@@ -30,10 +31,9 @@ public class Route extends BaseRoute {
     try {
       Class<?> controllerClass = Class.forName(controllerName);
       Constructor<?> constructor = controllerClass.getConstructor(HTTPRequest.class);
-      Object controller = constructor.newInstance(request);
-      Method action = controllerClass.getMethod(actionName);
+      BaseController controller = (BaseController) constructor.newInstance(request);
 
-      return (Response) action.invoke(controller);
+      return controller.call(actionName);
 
     } catch (ClassNotFoundException e) {
       throw new MissingController(controllerName);
@@ -52,6 +52,9 @@ public class Route extends BaseRoute {
       throw new FailedToGetResponse(getPath(), getMethod(), e);
     }
   }
+
+  // IllegalAccessException - controller class needs to be public
+  // InstantiationException - could not create new controller instance
 
   public String getControllerName() {
     return this.controllerName;

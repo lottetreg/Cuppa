@@ -63,24 +63,22 @@ public class RouteTest {
     assertFalse(route.hasMethod("POST"));
   }
 
-  static class Controller extends BaseController {
+  public static class Controller extends BaseController {
     public Controller(HTTPRequest request) {
       super(request);
     }
 
-    public Response empty() {
-      return new Response(200);
+    public void empty() {}
+
+    public String echo() {
+      return this.request.getBody();
     }
 
-    public Response echo() {
-      return new Response(200, this.request.getBody().getBytes());
-    }
-
-    public Response missingResource() {
+    public void missingResource() {
       throw new FileHelpers.MissingFile("/missing.html", new Throwable());
     }
 
-    public Response failure() {
+    public void failure() {
       throw new RuntimeException(new Throwable());
     }
   }

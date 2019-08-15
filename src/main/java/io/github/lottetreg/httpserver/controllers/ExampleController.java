@@ -2,6 +2,8 @@ package io.github.lottetreg.httpserver.controllers;
 
 import io.github.lottetreg.httpserver.HTTPRequest;
 
+import java.nio.file.Path;
+
 public class ExampleController extends BaseController {
   public ExampleController(HTTPRequest request) {
     super(request);
@@ -13,8 +15,7 @@ public class ExampleController extends BaseController {
     return this.request.getBody();
   }
 
-  public byte[] pickles() {
-    this.headers.put("Content-Type", getContentType("/pickles.jpg"));
-    return readFile("/pickles.jpg");
+  public Path pickles() {
+    return Path.of("/pickles.jpg");
   }
 }

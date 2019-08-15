@@ -1,5 +1,6 @@
 package io.github.lottetreg.httpserver;
 
+import java.nio.file.Path;
 import java.util.Map;
 
 public class Resource extends BaseRoute {
@@ -12,8 +13,8 @@ public class Resource extends BaseRoute {
 
   public Response getResponse(HTTPRequest request) {
     try {
-      String contentType = FileHelpers.getContentType(getResourcePath());
-      byte[] fileContents = FileHelpers.readFile(getResourcePath());
+      String contentType = FileHelpers.getContentType(Path.of(getResourcePath()));
+      byte[] fileContents = FileHelpers.readFile(Path.of(getResourcePath()));
 
       return new Response(200, fileContents, Map.of("Content-Type", contentType));
 

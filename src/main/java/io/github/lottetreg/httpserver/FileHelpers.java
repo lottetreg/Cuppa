@@ -1,35 +1,30 @@
 package io.github.lottetreg.httpserver;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 
 public class FileHelpers {
-  public static byte[] readFile(String filePath) {
+  public static byte[] readFile(Path filePath) {
     try {
-      String currentDir = ".";
-      String completeFilePath = currentDir + filePath;
-
-      return Files.readAllBytes(Path.of(completeFilePath));
+      Path currentDirectory = Path.of("/.");
+      return Files.readAllBytes(currentDirectory.relativize(filePath));
 
     } catch (NoSuchFileException e) {
-      throw new MissingFile(filePath, e);
+      throw new MissingFile(filePath.toString(), e);
 
     } catch (IOException e) {
-      throw new FailedToReadFromFile(filePath, e);
+      throw new FailedToReadFromFile(filePath.toString(), e);
     }
   }
 
-  public static String getContentType(String filePath) {
+  public static String getContentType(Path filePath) {
     try {
-      Path path = new File(filePath).toPath();
-
-      return Files.probeContentType(path);
+      return Files.probeContentType(filePath);
 
     } catch (IOException e) {
-      throw new FailedToGetContentType(filePath, e);
+      throw new FailedToGetContentType(filePath.toString(), e);
     }
   }
 

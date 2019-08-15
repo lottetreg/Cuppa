@@ -7,6 +7,7 @@ import org.junit.rules.ExpectedException;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.*;
@@ -114,7 +115,7 @@ public class RouteTest {
 
     assertEquals(200, response.getStatusCode());
     assertEquals("some body to love", new String(response.getBody()));
-    assertEquals(new HashMap<>(), response.getHeaders());
+    assertEquals(new HashMap<>(Map.of("Content-Type", "text/plain")), response.getHeaders());
   }
 
   @Test

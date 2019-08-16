@@ -13,13 +13,12 @@ public class Router {
     this.routes = routes;
   }
 
-  public Response route(HTTPRequest request)
-      throws NoMatchingPath, NoMatchingMethodForPath, Routable.MissingResource, Routable.FailedToGetResponse { // do this? Wrap and throw?
+  public Response route(HTTPRequest request) {
 
     Routable route = findMatchingRoute(request);
 
     if (route.getMethod().equals("OPTIONS")) {
-      return new Response(200, Map.of("Allow", getAllowedMethods(request)));
+      return new Response(200, Map.of("Allow", getAllowedMethods(request))); // Route.allowedMethodsForPath(String path), can have options endpoint in BaseController
     } else {
       return route.getResponse(request);
     }

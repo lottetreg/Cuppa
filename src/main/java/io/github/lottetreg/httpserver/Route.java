@@ -20,7 +20,7 @@ public class Route extends BaseRoute {
     try {
       Class<?> controllerClass = Class.forName(controllerName);
       Constructor<?> constructor = controllerClass.getConstructor(HTTPRequest.class);
-      BaseController controller = (BaseController) constructor.newInstance(request);
+      Controllable controller = (Controllable) constructor.newInstance(request);
 
       return controller.call(actionName);
 
@@ -33,12 +33,12 @@ public class Route extends BaseRoute {
     } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
       throw new FailedToInstantiateController(controllerName, e);
 
-    } catch (BaseController.MissingResource e) {
+    } catch (Controllable.MissingResource e) {
       throw new MissingResource(e.getMessage(), e);
 
-    } catch (BaseController.MissingControllerAction |
-        BaseController.InaccessibleControllerAction |
-        BaseController.ControllerActionFailed e) {
+    } catch (Controllable.MissingControllerAction |
+        Controllable.InaccessibleControllerAction |
+        Controllable.ControllerActionFailed e) {
 
       throw new ControllerActionFailed(e.getMessage(), e);
     }

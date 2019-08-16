@@ -8,11 +8,11 @@ import java.util.HashMap;
 import static io.github.lottetreg.httpserver.FileHelpers.getContentType;
 import static io.github.lottetreg.httpserver.FileHelpers.readFile;
 
-public class BaseController {
+class BaseController implements Controllable {
   private HTTPRequest request;
   private HashMap<String, String> headers;
 
-  public BaseController(HTTPRequest request) {
+  BaseController(HTTPRequest request) {
     this.request = request;
     this.headers = new HashMap<>();
   }
@@ -25,7 +25,7 @@ public class BaseController {
     this.headers.put(key, value);
   }
 
-  Response call(String actionName) {
+  public Response call(String actionName) {
     try {
       Method action = getClass().getMethod(actionName);
       Object result = action.invoke(this);
@@ -59,29 +59,5 @@ public class BaseController {
     return cause instanceof FileHelpers.MissingFile
         ? new MissingResource(cause.getMessage(), cause)
         : new ControllerActionFailed(action, cause);
-  }
-
-  static class MissingControllerAction extends RuntimeException {
-    MissingControllerAction(String action, Throwable cause) {
-      super(action, cause);
-    }
-  }
-
-  static class InaccessibleControllerAction extends RuntimeException {
-    InaccessibleControllerAction(String action, Throwable cause) {
-      super(action, cause);
-    }
-  }
-
-  class MissingResource extends RuntimeException {
-    MissingResource(String resourcePath, Throwable cause) {
-      super(resourcePath, cause);
-    }
-  }
-
-  static class ControllerActionFailed extends RuntimeException {
-    ControllerActionFailed(String action, Throwable cause) {
-      super(action, cause);
-    }
   }
 }

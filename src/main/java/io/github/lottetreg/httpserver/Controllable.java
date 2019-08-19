@@ -9,8 +9,8 @@ interface Controllable {
     }
   }
 
-  class InaccessibleControllerAction extends RuntimeException {
-    InaccessibleControllerAction(String action, Throwable cause) {
+  class FailedToInvokeControllerAction extends RuntimeException {
+    FailedToInvokeControllerAction(String action, Throwable cause) {
       super(action, cause);
     }
   }
@@ -18,12 +18,6 @@ interface Controllable {
   class MissingResource extends RuntimeException {
     MissingResource(String resourcePath, Throwable cause) {
       super(resourcePath, cause);
-    }
-  }
-
-  class ControllerActionFailed extends RuntimeException {
-    ControllerActionFailed(String action, Throwable cause) {
-      super(action, cause);
     }
   }
 }

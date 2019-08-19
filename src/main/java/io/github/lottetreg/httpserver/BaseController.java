@@ -47,17 +47,11 @@ class BaseController implements Controllable {
     } catch (NoSuchMethodException e) {
       throw new MissingControllerAction(actionName, e);
 
-    } catch (InvocationTargetException e) {
-      throw wrappedActionInvocationException(actionName, e.getCause());
+    } catch (InvocationTargetException | IllegalAccessException e) {
+      throw new FailedToInvokeControllerAction(actionName, e);
 
-    } catch (IllegalAccessException e) {
-      throw new InaccessibleControllerAction(actionName, e);
+    } catch (FileHelpers.MissingFile e) {
+      throw new MissingResource(e.getMessage(), e);
     }
-  }
-
-  private RuntimeException wrappedActionInvocationException(String action, Throwable cause) {
-    return cause instanceof FileHelpers.MissingFile
-        ? new MissingResource(cause.getMessage(), cause)
-        : new ControllerActionFailed(action, cause);
   }
 }

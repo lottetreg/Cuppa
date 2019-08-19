@@ -17,8 +17,6 @@ public class Server {
     while ((connection = serverSocket.acceptConnection()) != null) {
       Response response = new Response(500);
 
-      // handle 400s next; need to validate request
-
       try {
         Router router = new Router(routes);
         HTTPRequest request = new Reader().read(connection);
@@ -33,9 +31,6 @@ public class Server {
         } catch (Router.NoMatchingMethodForPath e) {
           e.printStackTrace();
           response = new Response(405, Map.of("Allow", router.getAllowedMethods(request)));
-
-        } catch (Throwable e) {
-          e.printStackTrace();
         }
 
       } catch (Throwable e) {
@@ -43,17 +38,12 @@ public class Server {
 
       } finally {
         HTTPResponse httpResponse = createHTTPResponse(response);
-
-        httpResponse.getHeaders().getHeaders().keySet().stream().forEach(headerKey ->
-            System.out.println(headerKey));
-
         writeToConnection(connection, httpResponse.toBytes());
       }
     }
   }
 
   private HTTPResponse createHTTPResponse(Response response) {
-    // use Optionals in Response?
     return new HTTPResponse.Builder(response.getStatusCode())
         .setBody(response.getBody())
         .setHeaders(new HTTPHeaders(response.getHeaders()))
@@ -70,7 +60,7 @@ public class Server {
     }
   }
 
-  // Every route should get HEAD and OPTIONS created by default
+  // Every route should get HEAD and OPTIONS created by default?
 
   private List<Routable> getRoutes() {
     List<Routable> customRoutes = new ArrayList<>(Arrays.asList(

@@ -7,7 +7,8 @@ public class ExampleController extends BaseController {
     super(request);
   }
 
-  public void empty() {}
+  public void empty() {
+  }
 
   public String echo() {
     return getRequest().getBody();

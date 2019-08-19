@@ -81,7 +81,8 @@ public class RouteTest {
   }
 
   @Test
-  public void itReturnsAResponseFromCallingTheController() { ;
+  public void itReturnsAResponseFromCallingTheController() {
+    ;
     Route route = newRouteForController("RouteTest$Controller");
 
     Response response = route.getResponse(this.emptyRequest);
@@ -139,7 +140,8 @@ public class RouteTest {
   }
 
   public static class MissingResourceController implements Controllable {
-    public MissingResourceController(HTTPRequest request) {}
+    public MissingResourceController(HTTPRequest request) {
+    }
 
     public Response call(String actionName) {
       throw new Controllable.MissingResource("/missing.html", new Throwable());
@@ -152,63 +154,6 @@ public class RouteTest {
     exceptionRule.expectMessage("/missing.html");
 
     Route route = newRouteForController("RouteTest$MissingResourceController");
-
-    route.getResponse(this.emptyRequest);
-  }
-
-  public static class MissingActionController implements Controllable {
-    public MissingActionController(HTTPRequest request) {}
-
-    public Response call(String actionName) {
-      throw new Controllable.MissingControllerAction("missingAction", new Throwable());
-    }
-  }
-
-  @Test
-  public void itThrowsAnExceptionIfCallingTheControllerThrowsAMissingActionException() {
-    exceptionRule.expect(Route.ControllerActionFailed.class);
-    exceptionRule.expectCause(instanceOf(Controllable.MissingControllerAction.class));
-    exceptionRule.expectMessage("missingAction");
-
-    Route route = newRouteForController("RouteTest$MissingActionController");
-
-    route.getResponse(this.emptyRequest);
-  }
-
-  public static class InaccessibleActionController implements Controllable {
-    public InaccessibleActionController(HTTPRequest request) {}
-
-    public Response call(String actionName) {
-      throw new Controllable.InaccessibleControllerAction("inaccessibleAction", new Throwable());
-    }
-  }
-
-  @Test
-  public void itThrowsAnExceptionIfCallingTheControllerThrowsAnInaccessibleControllerActionException() {
-    exceptionRule.expect(Route.ControllerActionFailed.class);
-    exceptionRule.expectCause(instanceOf(Controllable.InaccessibleControllerAction.class));
-    exceptionRule.expectMessage("inaccessibleAction");
-
-    Route route = newRouteForController("RouteTest$InaccessibleActionController");
-
-    route.getResponse(this.emptyRequest);
-  }
-
-  public static class FailedActionController implements Controllable {
-    public FailedActionController(HTTPRequest request) {}
-
-    public Response call(String actionName) {
-      throw new Controllable.ControllerActionFailed("failedAction", new Throwable());
-    }
-  }
-
-  @Test
-  public void itThrowsAnExceptionIfCallingTheControllerThrowsAFailedControllerActionException() {
-    exceptionRule.expect(Route.ControllerActionFailed.class);
-    exceptionRule.expectCause(instanceOf(Controllable.ControllerActionFailed.class));
-    exceptionRule.expectMessage("failedAction");
-
-    Route route = newRouteForController("RouteTest$FailedActionController");
 
     route.getResponse(this.emptyRequest);
   }

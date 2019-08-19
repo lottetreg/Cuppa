@@ -35,12 +35,6 @@ public class Route extends BaseRoute {
 
     } catch (Controllable.MissingResource e) {
       throw new MissingResource(e.getMessage(), e);
-
-    } catch (Controllable.MissingControllerAction |
-        Controllable.InaccessibleControllerAction |
-        Controllable.ControllerActionFailed e) {
-
-      throw new ControllerActionFailed(e.getMessage(), e);
     }
   }
 
@@ -71,12 +65,6 @@ public class Route extends BaseRoute {
   static class FailedToInstantiateController extends RuntimeException {
     FailedToInstantiateController(String controller, Throwable cause) {
       super(controller, cause);
-    }
-  }
-
-  static class ControllerActionFailed extends RuntimeException {
-    ControllerActionFailed(String action, Throwable cause) {
-      super(action, cause);
     }
   }
 }

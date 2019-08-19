@@ -47,10 +47,10 @@ public class ResourceTest {
 
   @Test
   public void itThrowsAnExceptionIfTheResourceIsMissing() {
-    Resource resource = new Resource("", "", "/missing_resource.html");
+    Resource resource = new Resource("", "", "/missing.html");
 
     exceptionRule.expect(Resource.MissingResource.class);
-    exceptionRule.expectMessage("Could not find /missing_resource.html");
+    exceptionRule.expectMessage("/missing.html");
 
     resource.getResponse(emptyHTTPRequest());
   }

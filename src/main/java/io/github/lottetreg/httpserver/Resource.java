@@ -23,9 +23,6 @@ public class Resource extends BaseRoute {
 
     } catch (FileHelpers.MissingFile e) {
       throw new MissingResource(getResourcePath(), e);
-
-    } catch (FileHelpers.FailedToReadFromFile | FileHelpers.FailedToGetContentType e) {
-      throw new FailedToGetResponse(getPath(), getMethod(), e);
     }
   }
 

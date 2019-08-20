@@ -1,5 +1,6 @@
 package io.github.lottetreg.httpserver;
 
+import org.junit.BeforeClass;
 import org.junit.After;
 import org.junit.Test;
 
@@ -18,6 +19,11 @@ public class BaseRouteTest {
     public Response getResponse(HTTPRequest request) {
       return null;
     }
+  }
+
+  @BeforeClass
+  public static void initialCleanUp() {
+    BaseRoute.routes.clear();
   }
 
   @After

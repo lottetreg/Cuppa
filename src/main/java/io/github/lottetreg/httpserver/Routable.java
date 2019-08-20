@@ -11,5 +11,5 @@ public interface Routable {
     MissingResource(String resourcePath, Throwable cause) {
       super(resourcePath, cause);
     }
-  }
+  } // move into BaseRoute
 }

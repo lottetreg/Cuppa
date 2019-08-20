@@ -1,18 +1,14 @@
 package io.github.lottetreg.httpserver;
 
-import java.util.ArrayList;
-import java.util.stream.Collectors;
-
 public abstract class BaseRoute implements Routable {
   protected String path;
   protected String method;
-  static private ArrayList<BaseRoute> routes = new ArrayList<>();
 
   BaseRoute(String path, String method) {
     this.path = path;
     this.method = method;
 
-    routes.add(this);
+    Routable.store(this);
   }
 
   public String getPath() {
@@ -31,15 +27,7 @@ public abstract class BaseRoute implements Routable {
     return getMethod().equals(method);
   }
 
-  static public String getAllowedMethods(String path) {
-    return routes.stream()
-        .filter(route -> route.hasPath(path))
-        .map(Routable::getMethod)
-        .distinct()
-        .collect(Collectors.joining(", "));
-  }
-
-  static public void clearRoutes() {
-    routes.clear();
+  public String getAllowedMethods() {
+    return Routable.getAllowedMethods(getPath());
   }
 }

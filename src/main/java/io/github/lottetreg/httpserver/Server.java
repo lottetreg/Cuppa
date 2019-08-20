@@ -30,7 +30,8 @@ public class Server {
 
         } catch (Router.NoMatchingMethodForPath e) {
           e.printStackTrace();
-          response = new Response(405, Map.of("Allow", router.getAllowedMethods(request)));
+          response = new Response(405, Map.of(
+              "Allow", Routable.getAllowedMethods(request.getURI())));
         }
 
       } catch (Throwable e) {
@@ -67,14 +68,14 @@ public class Server {
         new Route("/simple_get", "GET", "ExampleController", "empty"),
         new Route("/simple_get", "HEAD", "ExampleController", "empty"),
         new Route("/get_with_body", "HEAD", "ExampleController", "empty"),
-        new Route("/get_with_body", "OPTIONS", "ExampleController", "empty"),
+        new OptionsRoute("/get_with_body"),
         new Route("/echo_body", "POST", "ExampleController", "echo"),
         new Route("/method_options", "GET", "ExampleController", "empty"),
         new Route("/method_options", "HEAD", "ExampleController", "empty"),
-        new Route("/method_options", "OPTIONS", "ExampleController", "empty"),
+        new OptionsRoute("/method_options"),
         new Route("/method_options2", "GET", "ExampleController", "empty"),
         new Route("/method_options2", "HEAD", "ExampleController", "empty"),
-        new Route("/method_options2", "OPTIONS", "ExampleController", "empty"),
+        new OptionsRoute("/method_options2"),
         new Route("/method_options2", "PUT", "ExampleController", "empty"),
         new Route("/method_options2", "POST", "ExampleController", "empty"),
         new Route("/pickles", "GET", "ExampleController", "pickles"),

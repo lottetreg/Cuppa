@@ -1,9 +1,7 @@
 package io.github.lottetreg.httpserver;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Router {
@@ -14,20 +12,8 @@ public class Router {
   }
 
   public Response route(HTTPRequest request) {
-
     Routable route = findMatchingRoute(request);
-
-    if (route.getMethod().equals("OPTIONS")) {
-      return new Response(200, Map.of("Allow", getAllowedMethods(request))); // Routable.allowedMethodsForPath(String path), can have options endpoint in BaseController
-    } else {
-      return route.getResponse(request);
-    }
-  }
-
-  public String getAllowedMethods(HTTPRequest request) {
-    return routesWithMatchingPath(request.getURI())
-        .map(Routable::getMethod)
-        .collect(Collectors.joining(", "));
+    return route.getResponse(request);
   }
 
   private Routable findMatchingRoute(HTTPRequest request) {

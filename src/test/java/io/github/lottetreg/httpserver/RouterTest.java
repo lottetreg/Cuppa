@@ -8,8 +8,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
+
 public class RouterTest {
 
   static class MockRoute extends BaseRoute {
@@ -17,7 +17,9 @@ public class RouterTest {
       super(path, method);
     }
 
-    public Response getResponse(HTTPRequest request) { return new Response(200); }
+    public Response getResponse(HTTPRequest request) {
+      return new Response(200);
+    }
   }
 
   @Rule
@@ -36,26 +38,6 @@ public class RouterTest {
     assertEquals(200, response.getStatusCode());
     assertEquals("", new String(response.getBody()));
     assertEquals(new HashMap<>(), response.getHeaders());
-  }
-
-  @Test
-  public void itIncludesAllowedMethodsInTheHeadersForOPTIONS() {
-    HTTPRequest request = new HTTPRequest(
-        new HTTPInitialLine("OPTIONS / HTTP/1.0"),
-        new HTTPHeaders());
-
-    List<Routable> routes = Arrays.asList(
-        new MockRoute("/", "GET"),
-        new MockRoute("/", "OPTIONS"));
-
-    Response response = new Router(routes).route(request);
-
-    List<String> allowedMethods = Arrays.asList(response.getHeaders()
-        .get("Allow")
-        .split(", "));
-
-    assertTrue(allowedMethods.stream()
-        .allMatch(method -> method.equals("GET") || method.equals("OPTIONS")));
   }
 
   @Test

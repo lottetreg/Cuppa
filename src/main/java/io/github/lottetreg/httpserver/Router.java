@@ -2,7 +2,6 @@ package io.github.lottetreg.httpserver;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -13,37 +12,39 @@ public class Router {
     this.routes = routes;
   }
 
-  public Response route(HTTPRequest request) {
-
-    Routable route = findMatchingRoute(request);
-
-    if (route.getMethod().equals("OPTIONS")) {
-      return new Response(200, Map.of("Allow", getAllowedMethods(request))); // Route.allowedMethodsForPath(String path), can have options endpoint in BaseController
-    } else {
-      return route.getResponse(request);
-    }
-  }
-
-  public String getAllowedMethods(HTTPRequest request) {
-    return routesWithMatchingPath(request.getURI())
-        .map(Routable::getMethod)
-        .collect(Collectors.joining(", "));
-  }
-
-  private Routable findMatchingRoute(HTTPRequest request) {
+  Response route(HTTPRequest request) {
     String requestPath = request.getURI();
-    String requestMethod = request.getMethod();
 
     if (noRoutesMatchPath(requestPath)) {
       throw new NoMatchingPath(requestPath);
     }
 
-    Optional<Routable> matchingRoute = routesWithMatchingPath(requestPath)
-        .filter(route -> route.hasMethod(requestMethod))
-        .findFirst();
+    String requestMethod = request.getMethod();
 
-    return matchingRoute.orElseThrow(() ->
-        new NoMatchingMethodForPath(requestMethod, requestPath));
+    switch (requestMethod) {
+      case "HEAD":
+        return new Response(200);
+
+      case "OPTIONS":
+        return new Response(200, Map.of("Allow", getAllowedMethods(requestPath)));
+
+      default:
+        return routesWithMatchingPath(requestPath)
+            .filter(route -> route.hasMethod(requestMethod))
+            .findFirst()
+            .orElseThrow(() -> new NoMatchingMethodForPath(requestMethod, requestPath))
+            .getResponse(request);
+    }
+  }
+
+  String getAllowedMethods(String path) {
+    Stream<String> allowedMethods = this.routes.stream()
+        .filter(route -> route.hasPath(path))
+        .map(Routable::getMethod);
+
+    return Stream.concat(allowedMethods, Stream.of("HEAD", "OPTIONS"))
+        .distinct()
+        .collect(Collectors.joining(", "));
   }
 
   private Stream<Routable> routesWithMatchingPath(String path) {

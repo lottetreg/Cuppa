@@ -23,12 +23,12 @@ public class BaseRouteTest {
 
   @BeforeClass
   public static void initialCleanUp() {
-    BaseRoute.routes.clear();
+    BaseRoute.clearRoutes();
   }
 
   @After
   public void clearRoutes() {
-    BaseRoute.routes.clear();
+    BaseRoute.clearRoutes();
   }
 
   @Test
@@ -40,6 +40,7 @@ public class BaseRouteTest {
 
     List<String> splitAllowedMethods = List.of(allowedMethods.split(", "));
 
+    assertEquals(2, splitAllowedMethods.size());
     assertEquals(new HashSet<>(List.of("GET", "POST")), new HashSet<>(splitAllowedMethods));
   }
 
@@ -52,6 +53,20 @@ public class BaseRouteTest {
 
     List<String> splitAllowedMethods = List.of(allowedMethods.split(", "));
 
+    assertEquals(1, splitAllowedMethods.size());
+    assertEquals(new HashSet<>(List.of("GET")), new HashSet<>(splitAllowedMethods));
+  }
+
+  @Test
+  public void itDoesNotReturnRedundantAllowedMethods() {
+    new TestRoute("/", "GET");
+    new TestRoute("/", "GET");
+
+    String allowedMethods = BaseRoute.getAllowedMethods("/");
+
+    List<String> splitAllowedMethods = List.of(allowedMethods.split(", "));
+
+    assertEquals(1, splitAllowedMethods.size());
     assertEquals(new HashSet<>(List.of("GET")), new HashSet<>(splitAllowedMethods));
   }
 

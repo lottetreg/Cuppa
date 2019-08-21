@@ -77,8 +77,7 @@ public class Server {
 
     routes.addAll(defaultRoutes());
     routes.addAll(resourcesForCurrentDirectory());
-    routes.forEach(Routable::store);
-    routes.addAll(createDefaultRoutesForEachPath(Routable.getAllPaths()));
+    routes.addAll(createDefaultRoutesForEachPath(routes));
 
     return routes;
   }
@@ -112,14 +111,17 @@ public class Server {
     return resources;
   }
 
-  private List<Routable> createDefaultRoutesForEachPath(List<String> paths) {
-    List<Routable> routes = new ArrayList();
+  private List<Routable> createDefaultRoutesForEachPath(List<Routable> routes) {
+    List<Routable> defaultRoutes = new ArrayList();
 
-    paths.stream().forEach(path -> {
-      routes.add(new OptionsRoute(path));
-      routes.add(new HeadRoute(path));
-    });
+    routes.stream()
+        .map(Routable::getPath)
+        .distinct()
+        .forEach(path -> {
+          defaultRoutes.add(new OptionsRoute(path));
+          defaultRoutes.add(new HeadRoute(path));
+        });
 
-    return routes;
+    return defaultRoutes;
   }
 }

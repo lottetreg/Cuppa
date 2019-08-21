@@ -60,14 +60,14 @@ public class BaseRouteTest {
   }
 
   @Before
-  public static void clearRoutesOnStart() {
-    Routable.clearStoredRoutables();
+  public void clearRoutes() {
+    Routable.clearStore();
   }
 
   @Test
   public void itReturnsTheAllowedMethods() {
-    new TestRoute("/", "GET").store();
-    TestRoute route = new TestRoute("/", "POST").store();
+    new TestRoute("/", "GET");
+    TestRoute route = new TestRoute("/", "POST");
 
     String allowedMethods = route.getAllowedMethods();
 

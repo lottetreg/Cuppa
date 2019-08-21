@@ -11,11 +11,6 @@ public abstract class BaseRoute implements Routable {
     Routable.store(this);
   }
 
-  public BaseRoute store() {
-    Routable.store(this);
-    return this;
-  }
-
   public String getPath() {
     return this.path;
   }

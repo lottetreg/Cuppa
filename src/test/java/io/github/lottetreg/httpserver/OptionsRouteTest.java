@@ -9,12 +9,12 @@ import static org.junit.Assert.assertEquals;
 public class OptionsRouteTest {
   @BeforeClass
   public static void clearRoutesOnStart() {
-    Routable.clearStoredRoutables();
+    Routable.clearStore();
   }
 
   @After
   public void clearRoutes() {
-    Routable.clearStoredRoutables();
+    Routable.clearStore();
   }
 
   @Test

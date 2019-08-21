@@ -1,22 +1,10 @@
 package io.github.lottetreg.httpserver;
 
-import org.junit.After;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 public class HeadRouteTest {
-  @BeforeClass
-  public static void clearRoutesOnStart() {
-    Routable.clearStoredRoutables();
-  }
-
-  @After
-  public void clearRoutes() {
-    Routable.clearStoredRoutables();
-  }
-
   @Test
   public void itHasAPath() {
     HeadRoute route = new HeadRoute("/");

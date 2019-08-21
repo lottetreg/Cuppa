@@ -1,8 +1,5 @@
 package io.github.lottetreg.httpserver;
 
-import java.util.ArrayList;
-import java.util.stream.Collectors;
-
 public interface Routable {
   String getPath();
 
@@ -12,27 +9,7 @@ public interface Routable {
 
   Boolean hasMethod(String method);
 
-  String getAllowedMethods();
-
   Response getResponse(HTTPRequest request);
-
-  ArrayList<Routable> routables = new ArrayList<>();
-
-  static void store(Routable routable) {
-    routables.add(routable);
-  }
-
-  static void clearStore() {
-    routables.clear();
-  }
-
-  static String getAllowedMethods(String path) {
-    return routables.stream()
-        .filter(routable -> routable.hasPath(path))
-        .map(Routable::getMethod)
-        .distinct()
-        .collect(Collectors.joining(", "));
-  }
 
   class MissingResource extends RuntimeException {
     MissingResource(String resourcePath, Throwable cause) {

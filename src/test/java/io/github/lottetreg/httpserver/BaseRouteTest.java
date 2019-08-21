@@ -1,10 +1,6 @@
 package io.github.lottetreg.httpserver;
 
-import org.junit.Before;
 import org.junit.Test;
-
-import java.util.HashSet;
-import java.util.List;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
@@ -57,23 +53,5 @@ public class BaseRouteTest {
   public void itReturnsFalseIfItDoesNotHaveAMethod() {
     TestRoute route = new TestRoute("", "GET");
     assertFalse(route.hasMethod("POST"));
-  }
-
-  @Before
-  public void clearRoutes() {
-    Routable.clearStore();
-  }
-
-  @Test
-  public void itReturnsTheAllowedMethods() {
-    new TestRoute("/", "GET");
-    TestRoute route = new TestRoute("/", "POST");
-
-    String allowedMethods = route.getAllowedMethods();
-
-    List<String> splitAllowedMethods = List.of(allowedMethods.split(", "));
-
-    assertEquals(2, splitAllowedMethods.size());
-    assertEquals(new HashSet<>(List.of("GET", "POST")), new HashSet<>(splitAllowedMethods));
   }
 }

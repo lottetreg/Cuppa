@@ -7,8 +7,6 @@ public abstract class BaseRoute implements Routable {
   BaseRoute(String path, String method) {
     this.path = path;
     this.method = method;
-
-    Routable.store(this);
   }
 
   public String getPath() {
@@ -25,9 +23,5 @@ public abstract class BaseRoute implements Routable {
 
   public Boolean hasMethod(String method) {
     return getMethod().equals(method);
-  }
-
-  public String getAllowedMethods() {
-    return Routable.getAllowedMethods(getPath());
   }
 }

@@ -31,7 +31,7 @@ public class Server {
         } catch (Router.NoMatchingMethodForPath e) {
           e.printStackTrace();
           response = new Response(405, Map.of(
-              "Allow", Routable.getAllowedMethods(request.getURI())));
+              "Allow", router.getAllowedMethods(request.getURI())));
         }
 
       } catch (Throwable e) {
@@ -72,12 +72,11 @@ public class Server {
         new Route("/pickles", "GET", "ExampleController", "pickles"),
         new Route("/pickles_with_header", "GET", "ExampleController", "picklesWithHeader"),
         new Redirect("/redirect", "GET", "/simple_get"),
-        new HeadRoute("/get_with_body") // have to keep this to pass acceptance tests
+        new Route("/get_with_body", "HEAD", "", "") // need this to pass acceptance tests >:(
     ));
 
     routes.addAll(defaultRoutes());
     routes.addAll(resourcesForCurrentDirectory());
-    routes.addAll(createDefaultRoutesForEachPath(routes));
 
     return routes;
   }
@@ -109,19 +108,5 @@ public class Server {
     }
 
     return resources;
-  }
-
-  private List<Routable> createDefaultRoutesForEachPath(List<Routable> routes) {
-    List<Routable> defaultRoutes = new ArrayList();
-
-    routes.stream()
-        .map(Routable::getPath)
-        .distinct()
-        .forEach(path -> {
-          defaultRoutes.add(new OptionsRoute(path));
-          defaultRoutes.add(new HeadRoute(path));
-        });
-
-    return defaultRoutes;
   }
 }

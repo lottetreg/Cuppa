@@ -1,7 +1,6 @@
 package io.github.lottetreg.httpserver;
 
-import org.junit.After;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashSet;
@@ -22,16 +21,6 @@ public class BaseRouteTest {
     public Response getResponse(HTTPRequest request) {
       return null;
     }
-  }
-
-  @BeforeClass
-  public static void clearRoutesOnStart() {
-    Routable.clearStoredRoutables();
-  }
-
-  @After
-  public void clearRoutes() {
-    Routable.clearStoredRoutables();
   }
 
   @Test
@@ -70,10 +59,15 @@ public class BaseRouteTest {
     assertFalse(route.hasMethod("POST"));
   }
 
+  @Before
+  public static void clearRoutesOnStart() {
+    Routable.clearStoredRoutables();
+  }
+
   @Test
   public void itReturnsTheAllowedMethods() {
-    new TestRoute("/", "GET");
-    TestRoute route = new TestRoute("/", "POST");
+    new TestRoute("/", "GET").store();
+    TestRoute route = new TestRoute("/", "POST").store();
 
     String allowedMethods = route.getAllowedMethods();
 

@@ -77,6 +77,7 @@ public class Server {
 
     routes.addAll(defaultRoutes());
     routes.addAll(resourcesForCurrentDirectory());
+    routes.forEach(Routable::store);
     routes.addAll(createDefaultRoutesForEachPath(Routable.getAllPaths()));
 
     return routes;

@@ -61,32 +61,25 @@ public class Server {
     }
   }
 
-  // Every route should get HEAD and OPTIONS created by default?
-
   private List<Routable> getRoutes() {
-    List<Routable> customRoutes = new ArrayList<>(Arrays.asList(
+    List<Routable> routes = new ArrayList<>(Arrays.asList(
         new Route("/simple_get", "GET", "ExampleController", "empty"),
-        new Route("/simple_get", "HEAD", "ExampleController", "empty"),
-        new Route("/get_with_body", "HEAD", "ExampleController", "empty"),
-        new OptionsRoute("/get_with_body"),
         new Route("/echo_body", "POST", "ExampleController", "echo"),
         new Route("/method_options", "GET", "ExampleController", "empty"),
-        new Route("/method_options", "HEAD", "ExampleController", "empty"),
-        new OptionsRoute("/method_options"),
         new Route("/method_options2", "GET", "ExampleController", "empty"),
-        new Route("/method_options2", "HEAD", "ExampleController", "empty"),
-        new OptionsRoute("/method_options2"),
         new Route("/method_options2", "PUT", "ExampleController", "empty"),
         new Route("/method_options2", "POST", "ExampleController", "empty"),
         new Route("/pickles", "GET", "ExampleController", "pickles"),
         new Route("/pickles_with_header", "GET", "ExampleController", "picklesWithHeader"),
-        new Redirect("/redirect", "GET", "/simple_get")
+        new Redirect("/redirect", "GET", "/simple_get"),
+        new HeadRoute("/get_with_body") // have to keep this to pass acceptance tests
     ));
 
-    customRoutes.addAll(defaultRoutes());
-    customRoutes.addAll(resourcesForCurrentDirectory());
+    routes.addAll(defaultRoutes());
+    routes.addAll(resourcesForCurrentDirectory());
+    routes.addAll(createDefaultRoutesForEachPath(Routable.getAllPaths()));
 
-    return customRoutes;
+    return routes;
   }
 
   private List<Routable> defaultRoutes() {
@@ -116,5 +109,16 @@ public class Server {
     }
 
     return resources;
+  }
+
+  private List<Routable> createDefaultRoutesForEachPath(List<String> paths) {
+    List<Routable> routes = new ArrayList();
+
+    paths.stream().forEach(path -> {
+      routes.add(new OptionsRoute(path));
+      routes.add(new HeadRoute(path));
+    });
+
+    return routes;
   }
 }

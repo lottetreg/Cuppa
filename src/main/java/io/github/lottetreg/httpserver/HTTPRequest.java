@@ -5,6 +5,11 @@ public class HTTPRequest {
   private HTTPInitialLine initialLine;
   private String body = "";
 
+  HTTPRequest(HTTPInitialLine initialLine) {
+    this.initialLine = initialLine;
+    this.headers = new HTTPHeaders();
+  }
+
   HTTPRequest(HTTPInitialLine initialLine, HTTPHeaders headers) {
     this.initialLine = initialLine;
     this.headers = headers;

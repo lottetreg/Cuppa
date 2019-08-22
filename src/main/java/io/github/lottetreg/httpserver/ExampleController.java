@@ -22,4 +22,8 @@ public class ExampleController extends BaseController {
     addHeader("Some-Header", "HI");
     return Path.of("/pickles.jpg");
   }
+
+  public Path time() {
+    return Path.of("/time.html");
+  }
 }

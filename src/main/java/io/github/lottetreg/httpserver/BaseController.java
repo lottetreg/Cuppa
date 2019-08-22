@@ -11,10 +11,12 @@ import static io.github.lottetreg.httpserver.FileHelpers.readFile;
 class BaseController implements Controllable {
   private HTTPRequest request;
   private HashMap<String, String> headers;
+  public HashMap<String, String> data;
 
   BaseController(HTTPRequest request) {
     this.request = request;
     this.headers = new HashMap<>();
+    this.data = new HashMap<>();
   }
 
   HTTPRequest getRequest() {
@@ -38,8 +40,16 @@ class BaseController implements Controllable {
 
       } else if (result instanceof Path) {
         Path filePath = (Path) result;
-        addHeader("Content-Type", getContentType(filePath));
-        body = readFile(filePath);
+        String contentType = getContentType(filePath);
+
+        if (contentType.equals("text/html")) {
+
+          addHeader("Content-Type", contentType); // <%= currentTime %>
+          body = readFile(filePath);
+        } else {
+          addHeader("Content-Type", contentType);
+          body = readFile(filePath);
+        }
       }
 
       return new Response(200, body, this.headers);

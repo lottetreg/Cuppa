@@ -31,7 +31,8 @@ public class Server {
         new Route("/pickles", "GET", "ExampleController", "pickles"),
         new Route("/pickles_with_header", "GET", "ExampleController", "picklesWithHeader"),
         new Redirect("/redirect", "GET", "/simple_get"),
-        new Route("/get_with_body", "HEAD", "", "") // need this to pass acceptance tests >:(
+        new Route("/get_with_body", "HEAD", "", ""), // need this to pass acceptance tests >:(
+        new Route("/time", "GET", "ExampleController", "time")
     ));
 
     routes.addAll(defaultRoutes());

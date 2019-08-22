@@ -37,9 +37,13 @@ public class BaseControllerTest {
       throw new RuntimeException("Something went wrong");
     }
 
-    public Path embeddedData() {
-      this.data.put("someData", "Hello, there!");
-      return Path.of("/src/test/java/io/github/lottetreg/httpserver/support/embedded_data.html");
+    public Template embeddedData() {
+      addData("name", "Pickles");
+      return new Template("/src/test/java/io/github/lottetreg/httpserver/support/embedded_data.html");
+    }
+
+    public Template missingData() {
+      return new Template("/src/test/java/io/github/lottetreg/httpserver/support/embedded_data.html");
     }
   }
 
@@ -84,13 +88,13 @@ public class BaseControllerTest {
   }
 
   @Test
-  public void callReturnsAResponseFromAnActionThatReturnsAPathWithEmbeddedData() {
+  public void callReturnsAResponseFromAnActionThatReturnsATemplate() {
     TestController controller = new TestController(this.emptyRequest);
 
     Response response = controller.call("embeddedData");
 
     assertEquals(200, response.getStatusCode());
-    assertEquals("<h1>Hello, there!</h1>\n", new String(response.getBody()));
+    assertEquals("<h1>Hello, Pickles!</h1>\n", new String(response.getBody()));
     assertEquals(new HashMap<>(Map.of("Content-Type", "text/html")), response.getHeaders());
   }
 
@@ -125,5 +129,16 @@ public class BaseControllerTest {
     exceptionRule.expectMessage("/missing.html");
 
     controller.call("missingFile");
+  }
+
+  @Test
+  public void callThrowsAnExceptionIfTemplateDataIsMissing() {
+    TestController controller = new TestController(this.emptyRequest);
+
+    exceptionRule.expect(Controllable.MissingTemplateData.class);
+    exceptionRule.expectCause(instanceOf(TemplateRenderer.MissingContextKey.class));
+    exceptionRule.expectMessage("name");
+
+    controller.call("missingData");
   }
 }

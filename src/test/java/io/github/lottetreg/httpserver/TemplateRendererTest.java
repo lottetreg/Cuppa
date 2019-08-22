@@ -1,12 +1,17 @@
 package io.github.lottetreg.httpserver;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
 public class TemplateRendererTest {
+  @Rule
+  public ExpectedException exceptionRule = ExpectedException.none();
+
   @Test
   public void itRendersATemplateWithOneInterpolation() {
     String stringTemplate = "<h1><%= name %></h1>";
@@ -38,6 +43,9 @@ public class TemplateRendererTest {
     String stringTemplate = "<h1><%= name %></h1>";
     Map<String, String> context = Map.of();
 
-    assertEquals("<h1></h1>",  TemplateRenderer.render(context, stringTemplate));
+    exceptionRule.expect(TemplateRenderer.MissingContextKey.class);
+    exceptionRule.expectMessage("name");
+
+    TemplateRenderer.render(context, stringTemplate);
   }
 }

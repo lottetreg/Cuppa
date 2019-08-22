@@ -20,4 +20,10 @@ interface Controllable {
       super(resourcePath, cause);
     }
   }
+
+  class MissingTemplateData extends RuntimeException {
+    MissingTemplateData(String missingData, Throwable cause) {
+      super(missingData, cause);
+    }
+  }
 }

@@ -11,7 +11,7 @@ import static io.github.lottetreg.httpserver.FileHelpers.readFile;
 class BaseController implements Controllable {
   private HTTPRequest request;
   private HashMap<String, String> headers;
-  public HashMap<String, String> data;
+  private HashMap<String, String> data;
 
   BaseController(HTTPRequest request) {
     this.request = request;
@@ -27,6 +27,10 @@ class BaseController implements Controllable {
     this.headers.put(key, value);
   }
 
+  void addData(String key, String value) {
+    this.data.put(key, value);
+  }
+
   public Response call(String actionName) {
     try {
       Method action = getClass().getMethod(actionName);
@@ -38,18 +42,15 @@ class BaseController implements Controllable {
         addHeader("Content-Type", "text/plain");
         body = ((String) result).getBytes();
 
+      } else if (result instanceof Template) {
+        Template template = (Template) result;
+        addHeader("Content-Type", getContentType(template.getPath()));
+        body = template.render(this.data);
+
       } else if (result instanceof Path) {
         Path filePath = (Path) result;
-        String contentType = getContentType(filePath);
-
-        if (contentType.equals("text/html")) {
-
-          addHeader("Content-Type", contentType); // <%= currentTime %>
-          body = readFile(filePath);
-        } else {
-          addHeader("Content-Type", contentType);
-          body = readFile(filePath);
-        }
+        addHeader("Content-Type", getContentType(filePath));
+        body = readFile(filePath);
       }
 
       return new Response(200, body, this.headers);
@@ -62,6 +63,9 @@ class BaseController implements Controllable {
 
     } catch (FileHelpers.MissingFile e) {
       throw new MissingResource(e.getMessage(), e);
+
+    } catch (TemplateRenderer.MissingContextKey e) {
+      throw new MissingTemplateData(e.getMessage(), e);
     }
   }
 }

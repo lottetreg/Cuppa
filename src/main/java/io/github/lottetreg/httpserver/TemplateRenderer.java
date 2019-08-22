@@ -1,6 +1,7 @@
 package io.github.lottetreg.httpserver;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -10,7 +11,17 @@ public class TemplateRenderer {
     Matcher matcher = pattern.matcher(stringTemplate);
 
     return matcher.replaceAll(matchResult -> {
-      return context.getOrDefault(matchResult.group(1), "");
+      String match = matchResult.group(1);
+      Optional<String> contextValue = Optional.ofNullable(context.getOrDefault(match, null));
+
+      return contextValue.orElseThrow(() ->
+          new MissingContextKey(matchResult.group(1)));
     });
+  }
+
+  static public class MissingContextKey extends RuntimeException {
+    MissingContextKey(String key) {
+      super(key);
+    }
   }
 }

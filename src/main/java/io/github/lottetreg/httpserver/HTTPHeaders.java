@@ -2,6 +2,7 @@ package io.github.lottetreg.httpserver;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -9,13 +10,17 @@ public class HTTPHeaders {
   private HashMap<String, String> headers;
   private String headerSeparator = ": ";
 
-  HTTPHeaders(List<String> headersList) {
+  public HTTPHeaders(List<String> headersList) {
     this.headers = new HashMap<>(headersList.stream().collect(toMap(
         header -> getHeaderName(header),
         header -> getHeaderValue(header))));
   }
 
-  HTTPHeaders() {
+  public HTTPHeaders(Map<String, String> headers) {
+    this.headers = new HashMap<>(headers);
+  }
+
+  public HTTPHeaders() {
     this.headers = new HashMap<>();
   }
 

@@ -2,45 +2,39 @@ package io.github.lottetreg.httpserver;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 public class Route extends BaseRoute {
   private String controllerName;
   private String actionName;
-  private String controllersPackage;
 
   Route(String path, String method, String controllerName, String actionName) {
     super(path, method);
     this.controllerName = controllerName;
     this.actionName = actionName;
-    this.controllersPackage = "io.github.lottetreg.httpserver.controllers";
   }
 
-  Route(String path, String method, String controllerName, String actionName, String controllersPackage) {
-    super(path, method);
-    this.controllerName = controllerName;
-    this.actionName = actionName;
-    this.controllersPackage = controllersPackage;
-  }
-
-  public HTTPResponse getResponse(HTTPRequest request) {
-    String controllerName = this.controllersPackage + "." + getControllerName();
+  public Response getResponse(HTTPRequest request) {
+    String controllerName = getCompleteControllerName();
     String actionName = getActionName();
 
     try {
       Class<?> controllerClass = Class.forName(controllerName);
       Constructor<?> constructor = controllerClass.getConstructor(HTTPRequest.class);
-      Object controller = constructor.newInstance(request);
-      Method action = controllerClass.getMethod(actionName);
+      Controllable controller = (Controllable) constructor.newInstance(request);
 
-      return (HTTPResponse) action.invoke(controller);
+      return controller.call(actionName);
 
     } catch (ClassNotFoundException e) {
-      throw new MissingController(controllerName);
+      throw new MissingController(controllerName, e);
+
     } catch (NoSuchMethodException e) {
-      throw new MissingControllerAction(actionName, controllerName);
-    } catch (InvocationTargetException | IllegalAccessException | InstantiationException e) {
-      throw new RuntimeException(e);
+      throw new MissingControllerConstructor(controllerName, e);
+
+    } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
+      throw new FailedToInstantiateController(controllerName, e);
+
+    } catch (Controllable.MissingResource e) {
+      throw new MissingResource(e.getMessage(), e);
     }
   }
 
@@ -52,15 +46,25 @@ public class Route extends BaseRoute {
     return this.actionName;
   }
 
+  public String getCompleteControllerName() {
+    return getClass().getPackageName() + "." + getControllerName();
+  }
+
   static class MissingController extends RuntimeException {
-    MissingController(String controller) {
-      super("Could not find " + controller);
+    MissingController(String controller, Throwable cause) {
+      super(controller, cause);
     }
   }
 
-  static class MissingControllerAction extends RuntimeException {
-    MissingControllerAction(String action, String controller) {
-      super("Could not find " + action + " in " + controller);
+  static class MissingControllerConstructor extends RuntimeException {
+    MissingControllerConstructor(String controller, Throwable cause) {
+      super(controller, cause);
+    }
+  }
+
+  static class FailedToInstantiateController extends RuntimeException {
+    FailedToInstantiateController(String controller, Throwable cause) {
+      super(controller, cause);
     }
   }
 }

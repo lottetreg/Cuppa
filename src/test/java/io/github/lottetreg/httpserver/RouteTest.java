@@ -1,10 +1,14 @@
 package io.github.lottetreg.httpserver;
 
-import io.github.lottetreg.httpserver.controllers.BaseController;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+
+import static junit.framework.TestCase.assertTrue;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.*;
 
 public class RouteTest {
@@ -59,78 +63,98 @@ public class RouteTest {
     assertFalse(route.hasMethod("POST"));
   }
 
-  static class Controller extends BaseController {
+  private HTTPRequest emptyRequest = new HTTPRequest(
+      new HTTPInitialLine("GET / HTTP/1.0"),
+      new HTTPHeaders());
+
+  private Route newRouteForController(String controller) {
+    return new Route("", "", controller, "");
+  }
+
+  public static class Controller implements Controllable {
     public Controller(HTTPRequest request) {
-      super(request);
     }
 
-    public HTTPResponse empty() {
-      return new HTTPResponse.Builder(200).build();
-    }
-
-    public HTTPResponse echo() {
-      return new HTTPResponse.Builder(200)
-          .setBody(this.request.getBody())
-          .build();
+    public Response call(String actionName) {
+      return new Response(200);
     }
   }
 
-  private String controllersPackage = "io.github.lottetreg.httpserver";
-
   @Test
-  public void itReturnsAResponseFromTheAppropriateControllerAction() {
-    HTTPRequest request = new HTTPRequest(
-        new HTTPInitialLine("GET / HTTP/1.0"),
-        new HTTPHeaders());
+  public void itReturnsAResponseFromCallingTheController() {
+    ;
+    Route route = newRouteForController("RouteTest$Controller");
 
-    Route route = new Route("", "", "RouteTest$Controller", "empty", this.controllersPackage);
+    Response response = route.getResponse(this.emptyRequest);
 
-    HTTPResponse response = route.getResponse(request);
-
-    assertEquals("HTTP/1.0 200 OK\r\n\r\n", response.toString());
-  }
-
-  @Test
-  public void itReturnsAResponseFromTheAppropriateControllerActionAgain() {
-    HTTPRequest request = new HTTPRequest(
-        new HTTPInitialLine("POST / HTTP/1.0"),
-        new HTTPHeaders(),
-        "some body to love");
-
-
-    Route route = new Route("", "", "RouteTest$Controller", "echo", this.controllersPackage);
-
-    HTTPResponse response = route.getResponse(request);
-
-    assertEquals("HTTP/1.0 200 OK\r\n\r\nsome body to love", response.toString());
+    assertEquals(200, response.getStatusCode());
+    assertEquals("", new String(response.getBody()));
+    assertEquals(new HashMap<>(), response.getHeaders());
   }
 
   @Test
   public void itThrowsAnExceptionIfTheControllerIsMissing() {
-    HTTPRequest request = new HTTPRequest(
-        new HTTPInitialLine("GET / HTTP/1.0"),
-        new HTTPHeaders());
-
     exceptionRule.expect(Route.MissingController.class);
-    exceptionRule.expectMessage("Could not find io.github.lottetreg.httpserver.MissingController");
+    exceptionRule.expectMessage("io.github.lottetreg.httpserver.MissingController");
 
-    Route route = new Route("", "", "MissingController", "", this.controllersPackage);
+    Route route = newRouteForController("MissingController");
 
-    route.getResponse(request);
+    route.getResponse(this.emptyRequest);
+  }
+
+  public static class MissingConstructor implements Controllable {
+    public Response call(String actionName) {
+      return new Response(200);
+    }
   }
 
   @Test
-  public void itThrowsAnExceptionIfTheControllerActionIsMissing() {
-    HTTPRequest request = new HTTPRequest(
-        new HTTPInitialLine("GET / HTTP/1.0"),
-        new HTTPHeaders());
+  public void itThrowsAnExceptionIfTheControllerConstructorIsMissing() {
+    exceptionRule.expect(Route.MissingControllerConstructor.class);
+    exceptionRule.expectMessage("io.github.lottetreg.httpserver.RouteTest$MissingConstructor");
 
-    exceptionRule.expect(Route.MissingControllerAction.class);
-    exceptionRule.expectMessage(
-        "Could not find missingAction in io.github.lottetreg.httpserver.RouteTest$Controller");
+    Route route = newRouteForController("RouteTest$MissingConstructor");
 
-    Route route = new Route("", "", "RouteTest$Controller", "missingAction", this.controllersPackage);
+    route.getResponse(this.emptyRequest);
+  }
 
-    route.getResponse(request);
+  public static class BrokenConstructor implements Controllable {
+    public BrokenConstructor(HTTPRequest request) {
+      throw new RuntimeException();
+    }
+
+    public Response call(String actionName) {
+      return new Response(200);
+    }
+  }
+
+  @Test
+  public void itThrowsAnExceptionIfTheControllerConstructorThrowsAnException() {
+    exceptionRule.expect(Route.FailedToInstantiateController.class);
+    exceptionRule.expectCause(instanceOf(InvocationTargetException.class));
+    exceptionRule.expectMessage("io.github.lottetreg.httpserver.RouteTest$BrokenConstructor");
+
+    Route route = newRouteForController("RouteTest$BrokenConstructor");
+
+    route.getResponse(this.emptyRequest);
+  }
+
+  public static class MissingResourceController implements Controllable {
+    public MissingResourceController(HTTPRequest request) {
+    }
+
+    public Response call(String actionName) {
+      throw new Controllable.MissingResource("/missing.html", new Throwable());
+    }
+  }
+
+  @Test
+  public void itThrowsAnExceptionIfCallingTheControllerThrowsAMissingResourceException() {
+    exceptionRule.expect(Route.MissingResource.class);
+    exceptionRule.expectMessage("/missing.html");
+
+    Route route = newRouteForController("RouteTest$MissingResourceController");
+
+    route.getResponse(this.emptyRequest);
   }
 }

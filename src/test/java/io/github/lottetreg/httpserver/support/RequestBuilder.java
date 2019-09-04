@@ -1,16 +1,18 @@
 package io.github.lottetreg.httpserver.support;
 
 public class RequestBuilder {
-  private static String CLRF = "\r\n";
+  private static String CRLF = "\r\n";
 
   private String method;
   private String path;
+  private String version;
   private String headers;
   private String body;
 
   public RequestBuilder() {
     this.method = "";
     this.path = "";
+    this.version = "HTTP/1.0";
     this.headers = "";
     this.body = "";
   }
@@ -25,8 +27,13 @@ public class RequestBuilder {
     return this;
   }
 
+  public RequestBuilder setVersion(String version) {
+    this.version = version;
+    return this;
+  }
+
   public RequestBuilder addHeader(String header) {
-    this.headers = this.headers.concat(header + this.CLRF);
+    this.headers = this.headers.concat(header + this.CRLF);
     return this;
   }
 
@@ -36,9 +43,9 @@ public class RequestBuilder {
   }
 
   public String build() {
-    return this.method + " " + this.path + " HTTP/1.0" + this.CLRF +
+    return this.method + " " + this.path + " " + this.version + this.CRLF +
         this.headers +
-        this.CLRF +
+        this.CRLF +
         this.body;
   }
 }

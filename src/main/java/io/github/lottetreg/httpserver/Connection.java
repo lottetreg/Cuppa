@@ -38,19 +38,19 @@ public class Connection implements Connectionable {
 
   static class FailedToGetInputStream extends RuntimeException {
     FailedToGetInputStream(Throwable cause) {
-      super("Failed to get the input stream of the connection", cause);
+      super(cause);
     }
   }
 
   static class FailedToGetOutputStream extends RuntimeException {
     FailedToGetOutputStream(Throwable cause) {
-      super("Failed to get the output stream of the connection", cause);
+      super(cause);
     }
   }
 
   static class FailedToCloseConnection extends RuntimeException {
     FailedToCloseConnection(Throwable cause) {
-      super("Failed to close connection", cause);
+      super(cause);
     }
   }
 }

@@ -2,6 +2,7 @@ package io.github.lottetreg.httpserver;
 
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 import static org.junit.Assert.*;
@@ -26,10 +27,8 @@ public class RedirectTest {
   }
 
   @Test
-  public void itReturns301ResponseWithTheRedirectPathInTheHeaders() {
-    HTTPRequest request = new HTTPRequest(
-        new HTTPInitialLine("GET / HTTP/1.0"),
-        new HTTPHeaders(Arrays.asList("Host: www.example.com")));
+  public void itReturns301ResponseWithTheRedirectPathInTheHeaders() throws IOException {
+    HTTPRequest request = RequestHelpers.buildHTTPRequest("GET", "/", Arrays.asList("Host: www.example.com"));
 
     Redirect redirect = new Redirect("", "", "/some_other_path");
 

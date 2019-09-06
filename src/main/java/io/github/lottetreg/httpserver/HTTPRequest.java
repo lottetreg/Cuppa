@@ -1,64 +1,63 @@
 package io.github.lottetreg.httpserver;
 
-public class HTTPRequest {
-  private HTTPHeaders headers;
-  private HTTPInitialLine initialLine;
-  private String body = "";
+import java.io.IOException;
+import java.util.HashMap;
 
-  HTTPRequest(HTTPInitialLine initialLine) {
-    this.initialLine = initialLine;
-    this.headers = new HTTPHeaders();
+class HTTPRequest {
+  private Outable out;
+  private String method;
+  private String path;
+  private String protocolVersion;
+  private HashMap<String, String> headers;
+  private String body;
+
+  HTTPRequest(ParsedRequest parsedRequest) throws IOException {
+    this.out = new Out();
+    setFieldsFromParsedRequest(parsedRequest);
   }
 
-  HTTPRequest(HTTPInitialLine initialLine, HTTPHeaders headers) {
-    this.initialLine = initialLine;
-    this.headers = headers;
+  HTTPRequest(ParsedRequest parsedRequest, Outable out) throws IOException {
+    this.out = out;
+    setFieldsFromParsedRequest(parsedRequest);
   }
 
-  HTTPRequest(HTTPInitialLine initialLine, HTTPHeaders headers, String body) {
-    this.initialLine = initialLine;
-    this.headers = headers;
-    this.body = body;
+  private void setFieldsFromParsedRequest(ParsedRequest parsedRequest) throws IOException {
+    this.method = parsedRequest.getMethod();
+    this.path = parsedRequest.getPath();
+    this.protocolVersion = parsedRequest.getVersion();
+    this.headers = parsedRequest.getHeaders();
+    this.body = parsedRequest.getStreamReader().readNChars(getContentLength());
   }
 
   public String getMethod() {
-    return this.initialLine.getMethod();
+    return this.method;
   }
 
-  public String getURI() {
-    return this.initialLine.getURI();
+  public String getPath() {
+    return this.path;
   }
 
-  public String getHTTPVersion() {
-    return this.initialLine.getHTTPVersion();
+  public String getProtocolVersion() {
+    return this.protocolVersion;
   }
 
-  public String getHeader(String header) {
-    return this.headers.getHeader(header);
-  }
-
-  public int getContentLength() {
-    String contentLength = this.headers.getHeader(
-            "Content-Length",
-            "0");
-    try {
-      return Integer.valueOf(contentLength);
-    } catch (NumberFormatException e) {
-      throw new InvalidContentLength(contentLength); // log error but still return 0?
-    }
+  public String getHeader(String headerName) {
+    return this.headers.get(headerName);
   }
 
   public String getBody() {
     return this.body;
   }
 
-  public void setBody(String body) {
-    this.body = body;
-  }
-
-  static class InvalidContentLength extends RuntimeException {
-    InvalidContentLength(String contentLength) {
-      super("Invalid content length header: " + contentLength);
+  public int getContentLength() {
+    String contentLength = this.headers.getOrDefault(
+        "Content-Length",
+        "0");
+    try {
+      return Integer.valueOf(contentLength);
+    } catch (NumberFormatException e) {
+      this.out.println("Invalid Content-Length: " + contentLength);
+      return 0;
     }
   }
 }

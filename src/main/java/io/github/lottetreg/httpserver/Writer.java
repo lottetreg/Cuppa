@@ -16,7 +16,7 @@ public class Writer {
 
   static class FailedToWriteToConnection extends RuntimeException {
     FailedToWriteToConnection(Throwable cause) {
-      super("Failed to write to the connection", cause);
+      super(cause);
     }
   }
 }

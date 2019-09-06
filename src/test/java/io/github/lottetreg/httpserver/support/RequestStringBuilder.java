@@ -1,6 +1,6 @@
 package io.github.lottetreg.httpserver.support;
 
-public class RequestBuilder {
+public class RequestStringBuilder {
   private static String CRLF = "\r\n";
 
   private String method;
@@ -9,7 +9,7 @@ public class RequestBuilder {
   private String headers;
   private String body;
 
-  public RequestBuilder() {
+  public RequestStringBuilder() {
     this.method = "";
     this.path = "";
     this.version = "HTTP/1.0";
@@ -17,27 +17,27 @@ public class RequestBuilder {
     this.body = "";
   }
 
-  public RequestBuilder setMethod(String method) {
+  public RequestStringBuilder setMethod(String method) {
     this.method = method;
     return this;
   }
 
-  public RequestBuilder setPath(String path) {
+  public RequestStringBuilder setPath(String path) {
     this.path = path;
     return this;
   }
 
-  public RequestBuilder setVersion(String version) {
+  public RequestStringBuilder setVersion(String version) {
     this.version = version;
     return this;
   }
 
-  public RequestBuilder addHeader(String header) {
+  public RequestStringBuilder addHeader(String header) {
     this.headers = this.headers.concat(header + this.CRLF);
     return this;
   }
 
-  public RequestBuilder setBody(String body) {
+  public RequestStringBuilder setBody(String body) {
     this.body = body;
     return this;
   }

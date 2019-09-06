@@ -7,26 +7,29 @@ import org.junit.rules.ExpectedException;
 import java.io.IOException;
 import java.net.Socket;
 
+import static junit.framework.TestCase.assertTrue;
+
 public class ServerSocketTest {
   @Rule
   public ExpectedException exceptionRule = ExpectedException.none();
 
   @Test
-  public void itThrowsAnExceptionIfItFailsToAcceptTheConnection() throws IOException {
-    MockServerSocket serverSocket = new MockServerSocket();
+  public void theServerSocketReceivesAccept() throws IOException {
+    class MockServerSocket extends java.net.ServerSocket {
+      private boolean receivedAccept;
 
-    exceptionRule.expect(ServerSocket.FailedToAcceptConnection.class);
-    exceptionRule.expectMessage("Failed to accept connection");
+      MockServerSocket() throws IOException {
+      }
 
-    new ServerSocket(serverSocket).acceptConnection();
-  }
-
-  private class MockServerSocket extends java.net.ServerSocket {
-    MockServerSocket() throws IOException {
+      public Socket accept() {
+        this.receivedAccept = true;
+        return new Socket();
+      }
     }
 
-    public Socket accept() throws IOException {
-      throw new IOException(new Throwable());
-    }
+    MockServerSocket mockServerSocket = new MockServerSocket();
+    new ServerSocket(mockServerSocket).acceptConnection();
+
+    assertTrue(mockServerSocket.receivedAccept);
   }
 }

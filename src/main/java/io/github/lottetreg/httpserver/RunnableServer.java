@@ -18,7 +18,8 @@ public class RunnableServer implements Runnable {
 
     try {
       Router router = new Router(this.routes);
-      HTTPRequest request = new Reader().read(this.connection);
+      ParsedRequest parsedRequest = new ParsedRequest(connection.getInputStream(), new Out());
+      HTTPRequest request = new HTTPRequest(parsedRequest, new Out());
 
       try {
         response = router.route(request);
@@ -30,8 +31,12 @@ public class RunnableServer implements Runnable {
       } catch (Router.NoMatchingMethodForPath e) {
         e.printStackTrace();
         response = new Response(405, Map.of(
-            "Allow", router.getAllowedMethods(request.getURI())));
+            "Allow", router.getAllowedMethods(request.getPath())));
       }
+
+    } catch (ParsedRequest.BadRequest e) {
+      e.printStackTrace();
+      response = new Response(400);
 
     } catch (Throwable e) {
       e.printStackTrace();
@@ -44,15 +49,15 @@ public class RunnableServer implements Runnable {
 
   private HTTPResponse createHTTPResponse(Response response) {
     return new HTTPResponse.Builder(response.getStatusCode())
+        .setHeaders(response.getHeaders())
         .setBody(response.getBody())
-        .setHeaders(new HTTPHeaders(response.getHeaders()))
         .build();
   }
 
   private void writeToConnection(byte[] response) {
     try {
       new Writer().write(this.connection, response);
-    } catch (Exception e) {
+    } catch (Throwable e) {
       e.printStackTrace();
     } finally {
       this.connection.close();

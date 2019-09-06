@@ -1,18 +1,20 @@
 package io.github.lottetreg.httpserver;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class HTTPResponse {
   private String CRLF = "\r\n";
 
   private int statusCode;
+  private HashMap<String, String> headers;
   private byte[] body;
   private String protocolVersion;
-  private HTTPHeaders headers;
 
   private Map<Integer, String> statuses = Map.of(
       200, "OK",
       301, "Moved Permanently",
+      400, "Bad Request",
       404, "Not Found",
       405, "Method Not Allowed",
       500, "Internal Server Error"
@@ -20,28 +22,14 @@ public class HTTPResponse {
 
   HTTPResponse(Builder builder) {
     this.statusCode = builder.statusCode;
+    this.headers = builder.headers;
     this.body = builder.body;
     this.protocolVersion = builder.protocolVersion;
-    this.headers = builder.headers;
-  }
-
-  public int getStatusCode() {
-    return this.statusCode;
-  }
-
-  public HTTPHeaders getHeaders() {
-    return this.headers;
-  }
-
-  public String toString() {
-    return new String(toBytes());
   }
 
   public byte[] toBytes() {
     byte[] responseData = (initialLine() + joinedHeaders() + this.CRLF).getBytes();
-    byte[] responseBody = getBody();
-
-    return concatByteArrays(responseData, responseBody);
+    return concatByteArrays(responseData, this.body);
   }
 
   private String initialLine() {
@@ -53,19 +41,13 @@ public class HTTPResponse {
   }
 
   private String getStatus() {
-    return getStatusCode() + " " + this.statuses.get(getStatusCode());
+    return this.statusCode + " " + this.statuses.get(this.statusCode);
   }
 
   private String joinedHeaders() {
-    Map<String, String> headers = this.headers.getHeaders();
-
-    return headers.keySet().stream()
+    return this.headers.keySet().stream()
         .map(key -> key + ": " + headers.get(key) + this.CRLF)
         .reduce("", (header, acc) -> acc + header);
-  }
-
-  private byte[] getBody() {
-    return this.body;
   }
 
   private byte[] concatByteArrays(byte[] firstArray, byte[] secondArray) {
@@ -79,15 +61,15 @@ public class HTTPResponse {
 
   public static class Builder {
     public int statusCode;
+    public HashMap<String, String> headers;
     public byte[] body;
     public String protocolVersion;
-    public HTTPHeaders headers;
 
     public Builder(int statusCode) {
       this.statusCode = statusCode;
+      this.headers = new HashMap<>();
       this.body = new byte[] {};
       this.protocolVersion = "1.0";
-      this.headers = new HTTPHeaders();
     }
 
     public Builder setBody(byte[] body) {
@@ -95,17 +77,7 @@ public class HTTPResponse {
       return this;
     }
 
-    public Builder setBody(String body) {
-      this.body = body.getBytes();
-      return this;
-    }
-
-    public Builder setProtocolVersion(String protocolVersion) {
-      this.protocolVersion = protocolVersion;
-      return this;
-    }
-
-    public Builder setHeaders(HTTPHeaders headers) {
+    public Builder setHeaders(HashMap headers) {
       this.headers = headers;
       return this;
     }

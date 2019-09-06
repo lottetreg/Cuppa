@@ -61,7 +61,6 @@ public class ConnectionTest {
     Connection connection = new Connection(new MockSocket());
 
     exceptionRule.expect(Connection.FailedToGetInputStream.class);
-    exceptionRule.expectMessage("Failed to get the input stream of the connection");
 
     connection.getInputStream();
   }
@@ -78,7 +77,6 @@ public class ConnectionTest {
     Connection connection = new Connection(new MockSocket());
 
     exceptionRule.expect(Connection.FailedToGetOutputStream.class);
-    exceptionRule.expectMessage("Failed to get the output stream of the connection");
 
     connection.getOutputStream();
   }
@@ -105,7 +103,6 @@ public class ConnectionTest {
     Connection connection = new Connection(new MockSocket());
 
     exceptionRule.expect(Connection.FailedToCloseConnection.class);
-    exceptionRule.expectMessage("Failed to close connection");
 
     connection.close();
   }

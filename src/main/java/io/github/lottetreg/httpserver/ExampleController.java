@@ -1,6 +1,7 @@
 package io.github.lottetreg.httpserver;
 
 import java.nio.file.Path;
+import java.time.Instant;
 
 public class ExampleController extends BaseController {
   public ExampleController(HTTPRequest request) {
@@ -21,5 +22,10 @@ public class ExampleController extends BaseController {
   public Path picklesWithHeader() {
     addHeader("Some-Header", "HI");
     return Path.of("/pickles.jpg");
+  }
+
+  public Template time() {
+    addData("currentTime", Instant.now().toString());
+    return new Template("/time.html");
   }
 }

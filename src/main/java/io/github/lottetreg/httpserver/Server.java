@@ -15,49 +15,8 @@ public class Server {
     List<Routable> routes = getRoutes();
 
     while ((connection = serverSocket.acceptConnection()) != null) {
-      Response response = new Response(500);
-
-      try {
-        Router router = new Router(routes);
-        HTTPRequest request = new Reader().read(connection);
-
-        try {
-          response = router.route(request);
-
-        } catch (Router.NoMatchingPath | Routable.MissingResource e) {
-          e.printStackTrace();
-          response = new Response(404);
-
-        } catch (Router.NoMatchingMethodForPath e) {
-          e.printStackTrace();
-          response = new Response(405, Map.of(
-              "Allow", router.getAllowedMethods(request.getURI())));
-        }
-
-      } catch (Throwable e) {
-        e.printStackTrace();
-
-      } finally {
-        HTTPResponse httpResponse = createHTTPResponse(response);
-        writeToConnection(connection, httpResponse.toBytes());
-      }
-    }
-  }
-
-  private HTTPResponse createHTTPResponse(Response response) {
-    return new HTTPResponse.Builder(response.getStatusCode())
-        .setBody(response.getBody())
-        .setHeaders(new HTTPHeaders(response.getHeaders()))
-        .build();
-  }
-
-  private void writeToConnection(Connection connection, byte[] response) {
-    try {
-      new Writer().write(connection, response);
-    } catch (Exception e) {
-      e.printStackTrace();
-    } finally {
-      connection.close();
+      Thread thread = new Thread(new RunnableServer(connection, routes));
+      thread.start();
     }
   }
 
@@ -72,7 +31,8 @@ public class Server {
         new Route("/pickles", "GET", "ExampleController", "pickles"),
         new Route("/pickles_with_header", "GET", "ExampleController", "picklesWithHeader"),
         new Redirect("/redirect", "GET", "/simple_get"),
-        new Route("/get_with_body", "HEAD", "", "") // need this to pass acceptance tests >:(
+        new Route("/get_with_body", "HEAD", "", ""), // need this to pass acceptance tests >:(
+        new Route("/time", "GET", "ExampleController", "time")
     ));
 
     routes.addAll(defaultRoutes());

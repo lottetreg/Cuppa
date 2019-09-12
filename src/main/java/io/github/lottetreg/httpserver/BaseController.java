@@ -11,10 +11,12 @@ import static io.github.lottetreg.httpserver.FileHelpers.readFile;
 class BaseController implements Controllable {
   private HTTPRequest request;
   private HashMap<String, String> headers;
+  private HashMap<String, String> data;
 
   BaseController(HTTPRequest request) {
     this.request = request;
     this.headers = new HashMap<>();
+    this.data = new HashMap<>();
   }
 
   HTTPRequest getRequest() {
@@ -23,6 +25,10 @@ class BaseController implements Controllable {
 
   void addHeader(String key, String value) {
     this.headers.put(key, value);
+  }
+
+  void addData(String key, String value) {
+    this.data.put(key, value);
   }
 
   public Response call(String actionName) {
@@ -35,6 +41,11 @@ class BaseController implements Controllable {
       if (result instanceof String) {
         addHeader("Content-Type", "text/plain");
         body = ((String) result).getBytes();
+
+      } else if (result instanceof Template) {
+        Template template = (Template) result;
+        addHeader("Content-Type", getContentType(template.getPath()));
+        body = template.render(this.data);
 
       } else if (result instanceof Path) {
         Path filePath = (Path) result;
@@ -52,6 +63,9 @@ class BaseController implements Controllable {
 
     } catch (FileHelpers.MissingFile e) {
       throw new MissingResource(e.getMessage(), e);
+
+    } catch (TemplateRenderer.MissingContextKey e) {
+      throw new MissingTemplateData(e.getMessage(), e);
     }
   }
 }

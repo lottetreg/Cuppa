@@ -4,13 +4,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.io.IOException;
+
 import static org.junit.Assert.assertEquals;
 
 public class ResourceTest {
-  private HTTPRequest emptyHTTPRequest() {
-    return new HTTPRequest(
-        new HTTPInitialLine("GET / HTTP/1.0"),
-        new HTTPHeaders());
+  private HTTPRequest emptyRequest() throws IOException {
+    return RequestHelpers.buildHTTPRequest("GET", "/");
   }
 
   @Rule
@@ -35,10 +35,10 @@ public class ResourceTest {
   }
 
   @Test
-  public void itReturnsA200ResponseWithTheResource() {
+  public void itReturnsA200ResponseWithTheResource() throws IOException {
     Resource resource = new Resource("", "", "/src/test/java/io/github/lottetreg/httpserver/support/index.html");
 
-    Response response = resource.getResponse(emptyHTTPRequest());
+    Response response = resource.getResponse(emptyRequest());
 
     assertEquals(200, response.getStatusCode());
     assertEquals("<h1>Hello, World!</h1>\n", new String(response.getBody()));
@@ -46,12 +46,12 @@ public class ResourceTest {
   }
 
   @Test
-  public void itThrowsAnExceptionIfTheResourceIsMissing() {
+  public void itThrowsAnExceptionIfTheResourceIsMissing() throws IOException {
     Resource resource = new Resource("", "", "/missing.html");
 
     exceptionRule.expect(Resource.MissingResource.class);
     exceptionRule.expectMessage("/missing.html");
 
-    resource.getResponse(emptyHTTPRequest());
+    resource.getResponse(emptyRequest());
   }
 }

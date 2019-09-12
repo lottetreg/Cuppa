@@ -4,6 +4,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -47,16 +48,16 @@ public class BaseControllerTest {
     }
   }
 
-  private HTTPRequest emptyRequest = new HTTPRequest(
-      new HTTPInitialLine("GET / HTTP/1.0"),
-      new HTTPHeaders());
+  private HTTPRequest emptyRequest() throws IOException {
+    return RequestHelpers.buildHTTPRequest("GET", "/");
+  }
 
   @Rule
   public ExpectedException exceptionRule = ExpectedException.none();
 
   @Test
-  public void callReturnsAResponseFromAnActionThatReturnsNothing() {
-    TestController controller = new TestController(this.emptyRequest);
+  public void callReturnsAResponseFromAnActionThatReturnsNothing() throws IOException {
+    TestController controller = new TestController(emptyRequest());
 
     Response response = controller.call("empty");
 
@@ -66,8 +67,8 @@ public class BaseControllerTest {
   }
 
   @Test
-  public void callReturnsAResponseFromAnActionThatReturnsAString() {
-    TestController controller = new TestController(this.emptyRequest);
+  public void callReturnsAResponseFromAnActionThatReturnsAString() throws IOException {
+    TestController controller = new TestController(emptyRequest());
 
     Response response = controller.call("hello");
 
@@ -77,8 +78,8 @@ public class BaseControllerTest {
   }
 
   @Test
-  public void callReturnsAResponseFromAnActionThatReturnsAPath() {
-    TestController controller = new TestController(this.emptyRequest);
+  public void callReturnsAResponseFromAnActionThatReturnsAPath() throws IOException {
+    TestController controller = new TestController(emptyRequest());
 
     Response response = controller.call("index");
 
@@ -88,8 +89,8 @@ public class BaseControllerTest {
   }
 
   @Test
-  public void callReturnsAResponseFromAnActionThatReturnsATemplate() {
-    TestController controller = new TestController(this.emptyRequest);
+  public void callReturnsAResponseFromAnActionThatReturnsATemplate() throws IOException {
+    TestController controller = new TestController(emptyRequest());
 
     Response response = controller.call("embeddedData");
 
@@ -99,8 +100,8 @@ public class BaseControllerTest {
   }
 
   @Test
-  public void callThrowsAnExceptionIfTheActionIsMissing() {
-    TestController controller = new TestController(this.emptyRequest);
+  public void callThrowsAnExceptionIfTheActionIsMissing() throws IOException {
+    TestController controller = new TestController(emptyRequest());
 
     exceptionRule.expect(Controllable.MissingControllerAction.class);
     exceptionRule.expectCause(instanceOf(NoSuchMethodException.class));
@@ -110,8 +111,8 @@ public class BaseControllerTest {
   }
 
   @Test
-  public void callThrowsAnExceptionIfTheActionThrowsAnException() {
-    TestController controller = new TestController(this.emptyRequest);
+  public void callThrowsAnExceptionIfTheActionThrowsAnException() throws IOException {
+    TestController controller = new TestController(emptyRequest());
 
     exceptionRule.expect(Controllable.FailedToInvokeControllerAction.class);
     exceptionRule.expectCause(instanceOf(InvocationTargetException.class));
@@ -121,8 +122,8 @@ public class BaseControllerTest {
   }
 
   @Test
-  public void callThrowsAnExceptionIfTheFileIsMissing() {
-    TestController controller = new TestController(this.emptyRequest);
+  public void callThrowsAnExceptionIfTheFileIsMissing() throws IOException {
+    TestController controller = new TestController(emptyRequest());
 
     exceptionRule.expect(Controllable.MissingResource.class);
     exceptionRule.expectCause(instanceOf(FileHelpers.MissingFile.class));
@@ -132,8 +133,8 @@ public class BaseControllerTest {
   }
 
   @Test
-  public void callThrowsAnExceptionIfTemplateDataIsMissing() {
-    TestController controller = new TestController(this.emptyRequest);
+  public void callThrowsAnExceptionIfTemplateDataIsMissing() throws IOException {
+    TestController controller = new TestController(emptyRequest());
 
     exceptionRule.expect(Controllable.MissingTemplateData.class);
     exceptionRule.expectCause(instanceOf(TemplateRenderer.MissingContextKey.class));

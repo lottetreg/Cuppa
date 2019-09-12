@@ -1,9 +1,12 @@
 package io.github.lottetreg.httpserver;
 
+import io.github.lottetreg.httpserver.support.RequestStringBuilder;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -26,10 +29,8 @@ public class RouterTest {
   public ExpectedException exceptionRule = ExpectedException.none();
 
   @Test
-  public void itReturnsTheResponseFromTheMatchingRoute() {
-    HTTPRequest request = new HTTPRequest(
-        new HTTPInitialLine("GET / HTTP/1.0"),
-        new HTTPHeaders());
+  public void itReturnsTheResponseFromTheMatchingRoute() throws IOException {
+    HTTPRequest request = RequestHelpers.buildHTTPRequest("GET", "/");
 
     List<Routable> routes = Arrays.asList(new MockRoute("/", "GET"));
 
@@ -41,10 +42,8 @@ public class RouterTest {
   }
 
   @Test
-  public void itReturnsAnExceptionIfThereIsNoRouteWithMatchingPath() {
-    HTTPRequest request = new HTTPRequest(
-        new HTTPInitialLine("GET /no_match HTTP/1.0"),
-        new HTTPHeaders());
+  public void itReturnsAnExceptionIfThereIsNoRouteWithMatchingPath() throws IOException {
+    HTTPRequest request = RequestHelpers.buildHTTPRequest("GET", "/no_match");
 
     List<Routable> routes = Arrays.asList(new MockRoute("", ""));
 
@@ -55,10 +54,8 @@ public class RouterTest {
   }
 
   @Test
-  public void itReturnsAnExceptionIfThereIsNoMatchingMethodForTheRoute() {
-    HTTPRequest request = new HTTPRequest(
-        new HTTPInitialLine("POST / HTTP/1.0"),
-        new HTTPHeaders());
+  public void itReturnsAnExceptionIfThereIsNoMatchingMethodForTheRoute() throws IOException {
+    HTTPRequest request = RequestHelpers.buildHTTPRequest("POST", "/");
 
     List<Routable> routes = Arrays.asList(
         new MockRoute("/", "GET"),

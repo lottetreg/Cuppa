@@ -13,7 +13,7 @@ public class Router {
   }
 
   Response route(HTTPRequest request) {
-    String requestPath = request.getURI();
+    String requestPath = request.getPath();
 
     if (noRoutesMatchPath(requestPath)) {
       throw new NoMatchingPath(requestPath);

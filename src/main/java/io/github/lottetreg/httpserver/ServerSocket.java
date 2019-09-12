@@ -1,5 +1,6 @@
 package io.github.lottetreg.httpserver;
 
+import java.io.IOException;
 import java.net.Socket;
 
 public class ServerSocket {
@@ -9,18 +10,8 @@ public class ServerSocket {
     this.serverSocket = serverSocket;
   }
 
-  public Connection acceptConnection() {
-    try {
-      Socket socket = this.serverSocket.accept();
-      return new Connection(socket);
-    } catch (Exception e) {
-      throw new FailedToAcceptConnection(e);
-    }
-  }
-
-  static class FailedToAcceptConnection extends RuntimeException {
-    FailedToAcceptConnection(Throwable cause) {
-      super("Failed to accept connection", cause);
-    }
+  public Connection acceptConnection() throws IOException {
+    Socket socket = this.serverSocket.accept();
+    return new Connection(socket);
   }
 }

@@ -12,7 +12,7 @@ public class TemplateRenderer {
 
     return matcher.replaceAll(matchResult -> {
       String match = matchResult.group(1);
-      Optional<String> contextValue = Optional.ofNullable(context.getOrDefault(match, null));
+      Optional<String> contextValue = Optional.ofNullable(context.get(match));
 
       return contextValue.orElseThrow(() ->
           new MissingContextKey(matchResult.group(1)));

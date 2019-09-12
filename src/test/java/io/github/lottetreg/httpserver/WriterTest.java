@@ -13,7 +13,7 @@ public class WriterTest {
   public ExpectedException exceptionRule = ExpectedException.none();
 
   @Test
-  public void itWritesToTheConnection() {
+  public void itWritesToTheConnection() throws IOException {
     class MockConnection extends BaseMockConnection {
       private ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
@@ -31,34 +31,11 @@ public class WriterTest {
   }
 
   @Test
-  public void itThrowsANewExceptionIfItFailsToGetOutputStream() {
+  public void itThrowsANewExceptionIfItFailsToGetOutputStream() throws IOException {
     class MockConnection extends BaseMockConnection {
       @Override
       public OutputStream getOutputStream() {
         throw new Connection.FailedToGetOutputStream(new Throwable());
-      }
-    }
-
-    Connectionable connection = new MockConnection();
-
-    exceptionRule.expect(Writer.FailedToWriteToConnection.class);
-
-    new Writer().write(connection, new byte[] {});
-  }
-
-  @Test
-  public void itThrowsANewExceptionIfItFailsWithAnIOException() {
-    class MockOutputStream extends ByteArrayOutputStream {
-      @Override
-      public void write(byte[] output) throws IOException {
-        throw new IOException();
-      }
-    }
-
-    class MockConnection extends BaseMockConnection {
-      @Override
-      public OutputStream getOutputStream() {
-        return new MockOutputStream();
       }
     }
 

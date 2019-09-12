@@ -10,7 +10,7 @@ import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 
 public class Server {
-  public void start(ServerSocket serverSocket) {
+  public void start(ServerSocket serverSocket) throws IOException {
     Connection connection;
     List<Routable> routes = getRoutes();
 

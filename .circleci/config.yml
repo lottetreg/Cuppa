@@ -32,7 +32,7 @@ jobs:
       - persist_to_workspace:
           root: ~/repo/jar
           paths:
-            - httpserver-1.0-SNAPSHOT.jar
+            - Cuppa-1.0-SNAPSHOT.jar
 
 
   deploy:
@@ -49,7 +49,7 @@ jobs:
       - run:
           name: Send JAR to Server
           command: |
-            scp /tmp/workspace/httpserver-1.0-SNAPSHOT.jar $SSH_USER@$SSH_HOST:$SSH_DEPLOY_PATH
+            scp /tmp/workspace/Cuppa-1.0-SNAPSHOT.jar $SSH_USER@$SSH_HOST:$SSH_DEPLOY_PATH
 
 workflows:
   version: 2

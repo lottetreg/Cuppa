@@ -16,12 +16,12 @@ dependencies {
 }
 
 application {
-    mainClassName = 'io.github.lottetreg.httpserver.HTTPServer'
+    mainClassName = 'io.github.lottetreg.Cuppa.HTTPServer'
 }
 
 jar {
     manifest {
-        attributes 'Main-Class': 'io.github.lottetreg.httpserver.HTTPServer'
+        attributes 'Main-Class': 'io.github.lottetreg.Cuppa.HTTPServer'
     }
     destinationDir = file('./jar')
 }

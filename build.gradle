@@ -1,9 +1,12 @@
 plugins {
     id 'java'
     id 'application'
+    id 'maven'
 }
 
 version '1.0-SNAPSHOT'
+
+group = 'com.github.lottetreg'
 
 sourceCompatibility = 1.8
 

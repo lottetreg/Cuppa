@@ -8,7 +8,7 @@ version '1.0-SNAPSHOT'
 
 group = 'com.github.lottetreg'
 
-sourceCompatibility = 1.8
+sourceCompatibility = 1.11
 
 repositories {
     mavenCentral()

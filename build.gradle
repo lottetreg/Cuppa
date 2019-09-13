@@ -8,7 +8,8 @@ version '1.0-SNAPSHOT'
 
 group = 'com.github.lottetreg'
 
-sourceCompatibility = 1.8
+sourceCompatibility = 1.11
+targetCompatibility = 1.11
 
 repositories {
     mavenCentral()
@@ -27,4 +28,9 @@ jar {
         attributes 'Main-Class': 'io.github.lottetreg.Cuppa.HTTPServer'
     }
     destinationDir = file('./jar')
+}
+
+wrapper {
+    gradleVersion = "5.6.2"
+    distributionType = Wrapper.DistributionType.ALL
 }

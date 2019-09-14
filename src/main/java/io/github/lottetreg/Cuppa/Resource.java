@@ -9,7 +9,7 @@ import static io.github.lottetreg.Cuppa.FileHelpers.readFile;
 public class Resource extends BaseRoute {
   String resourcePath;
 
-  Resource(String path, String method, String resourcePath) {
+  public Resource(String path, String method, String resourcePath) {
     super(path, method);
     this.resourcePath = resourcePath;
   }

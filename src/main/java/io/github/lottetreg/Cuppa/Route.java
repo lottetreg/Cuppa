@@ -7,7 +7,7 @@ public class Route extends BaseRoute {
   private String controllerName;
   private String actionName;
 
-  Route(String path, String method, String controllerName, String actionName) {
+  public Route(String path, String method, String controllerName, String actionName) {
     super(path, method);
     this.controllerName = controllerName;
     this.actionName = actionName;

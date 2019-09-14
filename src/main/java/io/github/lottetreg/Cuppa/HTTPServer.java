@@ -7,7 +7,10 @@ import java.util.List;
 public class HTTPServer {
   public static void main(String[] args) {
     try {
-      Server.start(5000, getRoutes());
+      // TODO: if no port number, catch error and display message
+      Server.start(Integer.parseInt(args[0]), getRoutes());
+    } catch (NumberFormatException e) {
+      System.out.println("Invalid port number: " + args[0]);
     } catch (Exception e) {
       e.printStackTrace();
     }

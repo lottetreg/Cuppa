@@ -4,10 +4,6 @@ import java.nio.file.Path;
 import java.time.Instant;
 
 public class ExampleController extends BaseController {
-  public ExampleController(HTTPRequest request) {
-    super(request);
-  }
-
   public void empty() {
   }
 

@@ -15,10 +15,6 @@ import static org.junit.Assert.assertEquals;
 
 public class BaseControllerTest {
   public class TestController extends BaseController {
-    TestController(HTTPRequest request) {
-      super(request);
-    }
-
     public void empty() {
     }
 
@@ -57,7 +53,7 @@ public class BaseControllerTest {
 
   @Test
   public void callReturnsAResponseFromAnActionThatReturnsNothing() throws IOException {
-    TestController controller = new TestController(emptyRequest());
+    Controllable controller = new TestController().setRequest(emptyRequest());
 
     Response response = controller.call("empty");
 
@@ -68,7 +64,7 @@ public class BaseControllerTest {
 
   @Test
   public void callReturnsAResponseFromAnActionThatReturnsAString() throws IOException {
-    TestController controller = new TestController(emptyRequest());
+    Controllable controller = new TestController().setRequest(emptyRequest());
 
     Response response = controller.call("hello");
 
@@ -79,7 +75,7 @@ public class BaseControllerTest {
 
   @Test
   public void callReturnsAResponseFromAnActionThatReturnsAPath() throws IOException {
-    TestController controller = new TestController(emptyRequest());
+    Controllable controller = new TestController().setRequest(emptyRequest());
 
     Response response = controller.call("index");
 
@@ -90,7 +86,7 @@ public class BaseControllerTest {
 
   @Test
   public void callReturnsAResponseFromAnActionThatReturnsATemplate() throws IOException {
-    TestController controller = new TestController(emptyRequest());
+    Controllable controller = new TestController().setRequest(emptyRequest());
 
     Response response = controller.call("embeddedData");
 
@@ -101,7 +97,7 @@ public class BaseControllerTest {
 
   @Test
   public void callThrowsAnExceptionIfTheActionIsMissing() throws IOException {
-    TestController controller = new TestController(emptyRequest());
+    Controllable controller = new TestController().setRequest(emptyRequest());
 
     exceptionRule.expect(Controllable.MissingControllerAction.class);
     exceptionRule.expectCause(instanceOf(NoSuchMethodException.class));
@@ -112,7 +108,7 @@ public class BaseControllerTest {
 
   @Test
   public void callThrowsAnExceptionIfTheActionThrowsAnException() throws IOException {
-    TestController controller = new TestController(emptyRequest());
+    Controllable controller = new TestController().setRequest(emptyRequest());
 
     exceptionRule.expect(Controllable.FailedToInvokeControllerAction.class);
     exceptionRule.expectCause(instanceOf(InvocationTargetException.class));
@@ -123,7 +119,7 @@ public class BaseControllerTest {
 
   @Test
   public void callThrowsAnExceptionIfTheFileIsMissing() throws IOException {
-    TestController controller = new TestController(emptyRequest());
+    Controllable controller = new TestController().setRequest(emptyRequest());
 
     exceptionRule.expect(Controllable.MissingResource.class);
     exceptionRule.expectCause(instanceOf(FileHelpers.MissingFile.class));
@@ -134,7 +130,7 @@ public class BaseControllerTest {
 
   @Test
   public void callThrowsAnExceptionIfTemplateDataIsMissing() throws IOException {
-    TestController controller = new TestController(emptyRequest());
+    Controllable controller = new TestController().setRequest(emptyRequest());
 
     exceptionRule.expect(Controllable.MissingTemplateData.class);
     exceptionRule.expectCause(instanceOf(TemplateRenderer.MissingContextKey.class));

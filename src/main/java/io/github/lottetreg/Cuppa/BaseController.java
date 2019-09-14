@@ -8,13 +8,12 @@ import java.util.HashMap;
 import static io.github.lottetreg.Cuppa.FileHelpers.getContentType;
 import static io.github.lottetreg.Cuppa.FileHelpers.readFile;
 
-class BaseController implements Controllable {
+public class BaseController implements Controllable {
   private HTTPRequest request;
   private HashMap<String, String> headers;
   private HashMap<String, String> data;
 
-  BaseController(HTTPRequest request) {
-    this.request = request;
+  BaseController() {
     this.headers = new HashMap<>();
     this.data = new HashMap<>();
   }
@@ -29,6 +28,11 @@ class BaseController implements Controllable {
 
   void addData(String key, String value) {
     this.data.put(key, value);
+  }
+
+  public Controllable setRequest(HTTPRequest request) {
+    this.request = request;
+    return this;
   }
 
   public Response call(String actionName) {

@@ -19,8 +19,8 @@ public class Route extends BaseRoute {
 
     try {
       Class<?> controllerClass = Class.forName(controllerName);
-      Constructor<?> constructor = controllerClass.getConstructor(HTTPRequest.class);
-      Controllable controller = (Controllable) constructor.newInstance(request);
+      Constructor<?> constructor = controllerClass.getConstructor();
+      Controllable controller = ((Controllable) constructor.newInstance()).setRequest(request);
 
       return controller.call(actionName);
 

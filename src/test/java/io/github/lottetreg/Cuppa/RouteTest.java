@@ -73,7 +73,11 @@ public class RouteTest {
   }
 
   public static class Controller implements Controllable {
-    public Controller(HTTPRequest request) {
+    HTTPRequest request;
+
+    public Controllable setRequest(HTTPRequest request) {
+      this.request = request;
+      return this;
     }
 
     public Response call(String actionName) {
@@ -83,7 +87,6 @@ public class RouteTest {
 
   @Test
   public void itReturnsAResponseFromCallingTheController() throws IOException {
-    ;
     Route route = newRouteForController("RouteTest$Controller");
 
     Response response = route.getResponse(emptyRequest());
@@ -103,25 +106,16 @@ public class RouteTest {
     route.getResponse(emptyRequest());
   }
 
-  public static class MissingConstructor implements Controllable {
-    public Response call(String actionName) {
-      return new Response(200);
-    }
-  }
-
-  @Test
-  public void itThrowsAnExceptionIfTheControllerConstructorIsMissing() throws IOException {
-    exceptionRule.expect(Route.MissingControllerConstructor.class);
-    exceptionRule.expectMessage("io.github.lottetreg.Cuppa.RouteTest$MissingConstructor");
-
-    Route route = newRouteForController("RouteTest$MissingConstructor");
-
-    route.getResponse(emptyRequest());
-  }
-
   public static class BrokenConstructor implements Controllable {
-    public BrokenConstructor(HTTPRequest request) {
+    HTTPRequest request;
+
+    public BrokenConstructor() {
       throw new RuntimeException();
+    }
+
+    public Controllable setRequest(HTTPRequest request) {
+      this.request = request;
+      return this;
     }
 
     public Response call(String actionName) {
@@ -141,7 +135,11 @@ public class RouteTest {
   }
 
   public static class MissingResourceController implements Controllable {
-    public MissingResourceController(HTTPRequest request) {
+    HTTPRequest request;
+
+    public Controllable setRequest(HTTPRequest request) {
+      this.request = request;
+      return this;
     }
 
     public Response call(String actionName) {

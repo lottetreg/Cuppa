@@ -10,13 +10,8 @@ import static io.github.lottetreg.Cuppa.FileHelpers.readFile;
 
 public class BaseController implements Controllable {
   private HTTPRequest request;
-  private HashMap<String, String> headers;
-  private HashMap<String, String> data;
-
-  BaseController() {
-    this.headers = new HashMap<>();
-    this.data = new HashMap<>();
-  }
+  private HashMap<String, String> headers = new HashMap<>();
+  private HashMap<String, String> data = new HashMap<>();
 
   HTTPRequest getRequest() {
     return this.request;

@@ -4,28 +4,24 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class Route extends BaseRoute {
-  private String controllerName;
+  private Class controller;
   private String actionName;
 
-  public Route(String path, String method, String controllerName, String actionName) {
+  public Route(String path, String method, Class controller, String actionName) {
     super(path, method);
-    this.controllerName = controllerName;
+    this.controller = controller;
     this.actionName = actionName;
   }
 
   public Response getResponse(HTTPRequest request) {
-    String controllerName = getCompleteControllerName();
+    String controllerName = getControllerName();
     String actionName = getActionName();
 
     try {
-      Class<?> controllerClass = Class.forName(controllerName);
-      Constructor<?> constructor = controllerClass.getConstructor(HTTPRequest.class);
-      Controllable controller = (Controllable) constructor.newInstance(request);
+      Constructor<?> constructor = this.controller.getConstructor();
+      Controllable controller = ((Controllable) constructor.newInstance()).setRequest(request);
 
       return controller.call(actionName);
-
-    } catch (ClassNotFoundException e) {
-      throw new MissingController(controllerName, e);
 
     } catch (NoSuchMethodException e) {
       throw new MissingControllerConstructor(controllerName, e);
@@ -38,22 +34,12 @@ public class Route extends BaseRoute {
     }
   }
 
-  public String getControllerName() {
-    return this.controllerName;
+  private String getControllerName() {
+    return this.controller.getSimpleName();
   }
 
-  public String getActionName() {
+  private String getActionName() {
     return this.actionName;
-  }
-
-  public String getCompleteControllerName() {
-    return getClass().getPackageName() + "." + getControllerName();
-  }
-
-  static class MissingController extends RuntimeException {
-    MissingController(String controller, Throwable cause) {
-      super(controller, cause);
-    }
   }
 
   static class MissingControllerConstructor extends RuntimeException {

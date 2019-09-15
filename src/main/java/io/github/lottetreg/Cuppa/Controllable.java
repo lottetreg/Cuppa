@@ -1,6 +1,8 @@
 package io.github.lottetreg.Cuppa;
 
 interface Controllable {
+  Controllable setRequest(HTTPRequest request);
+
   Response call(String actionName);
 
   class MissingControllerAction extends RuntimeException {

@@ -13,15 +13,15 @@ public class BaseController implements Controllable {
   private HashMap<String, String> headers = new HashMap<>();
   private HashMap<String, String> data = new HashMap<>();
 
-  HTTPRequest getRequest() {
+  public HTTPRequest getRequest() {
     return this.request;
   }
 
-  void addHeader(String key, String value) {
+  public void addHeader(String key, String value) {
     this.headers.put(key, value);
   }
 
-  void addData(String key, String value) {
+  public void addData(String key, String value) {
     this.data.put(key, value);
   }
 

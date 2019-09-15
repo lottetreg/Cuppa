@@ -6,7 +6,7 @@ import java.util.Map;
 public class Template {
   private Path path;
 
-  Template(String path) {
+  public Template(String path) {
     this.path = Path.of(path);
   }
 

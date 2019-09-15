@@ -3,7 +3,7 @@ package io.github.lottetreg.Cuppa;
 import java.io.IOException;
 import java.util.HashMap;
 
-class HTTPRequest {
+public class HTTPRequest {
   private Outable out;
   private String method;
   private String path;

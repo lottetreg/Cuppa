@@ -1,6 +1,5 @@
 plugins {
     id 'java'
-    id 'application'
     id 'maven'
 }
 
@@ -19,14 +18,7 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
-application {
-    mainClassName = 'io.github.lottetreg.Cuppa.HTTPServer'
-}
-
 jar {
-    manifest {
-        attributes 'Main-Class': 'io.github.lottetreg.Cuppa.HTTPServer'
-    }
     destinationDir = file('./jar')
 }
 

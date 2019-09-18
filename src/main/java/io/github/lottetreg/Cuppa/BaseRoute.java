@@ -1,6 +1,6 @@
 package io.github.lottetreg.Cuppa;
 
-public abstract class BaseRoute implements Routable {
+public abstract class BaseRoute implements Responsive {
   protected String path;
   protected String method;
 

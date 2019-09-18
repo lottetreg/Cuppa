@@ -14,7 +14,7 @@ public class Resource extends BaseRoute {
     this.resourcePath = resourcePath;
   }
 
-  public Response getResponse(HTTPRequest request) {
+  public Response getResponse(Request request) {
     try {
       String contentType = getContentType(Path.of(getResourcePath()));
       byte[] fileContents = readFile(Path.of(getResourcePath()));

@@ -4,7 +4,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -44,15 +43,15 @@ public class BaseControllerTest {
     }
   }
 
-  private HTTPRequest emptyRequest() throws IOException {
-    return RequestHelpers.buildHTTPRequest("GET", "/");
+  private Request emptyRequest() {
+    return new Request("GET", "/", new HashMap<>(), "");
   }
 
   @Rule
   public ExpectedException exceptionRule = ExpectedException.none();
 
   @Test
-  public void callReturnsAResponseFromAnActionThatReturnsNothing() throws IOException {
+  public void callReturnsAResponseFromAnActionThatReturnsNothing() {
     Controllable controller = new TestController().setRequest(emptyRequest());
 
     Response response = controller.call("empty");
@@ -63,7 +62,7 @@ public class BaseControllerTest {
   }
 
   @Test
-  public void callReturnsAResponseFromAnActionThatReturnsAString() throws IOException {
+  public void callReturnsAResponseFromAnActionThatReturnsAString() {
     Controllable controller = new TestController().setRequest(emptyRequest());
 
     Response response = controller.call("hello");
@@ -74,7 +73,7 @@ public class BaseControllerTest {
   }
 
   @Test
-  public void callReturnsAResponseFromAnActionThatReturnsAPath() throws IOException {
+  public void callReturnsAResponseFromAnActionThatReturnsAPath() {
     Controllable controller = new TestController().setRequest(emptyRequest());
 
     Response response = controller.call("index");
@@ -85,7 +84,7 @@ public class BaseControllerTest {
   }
 
   @Test
-  public void callReturnsAResponseFromAnActionThatReturnsATemplate() throws IOException {
+  public void callReturnsAResponseFromAnActionThatReturnsATemplate() {
     Controllable controller = new TestController().setRequest(emptyRequest());
 
     Response response = controller.call("embeddedData");
@@ -96,7 +95,7 @@ public class BaseControllerTest {
   }
 
   @Test
-  public void callThrowsAnExceptionIfTheActionIsMissing() throws IOException {
+  public void callThrowsAnExceptionIfTheActionIsMissing() {
     Controllable controller = new TestController().setRequest(emptyRequest());
 
     exceptionRule.expect(Controllable.MissingControllerAction.class);
@@ -107,7 +106,7 @@ public class BaseControllerTest {
   }
 
   @Test
-  public void callThrowsAnExceptionIfTheActionThrowsAnException() throws IOException {
+  public void callThrowsAnExceptionIfTheActionThrowsAnException() {
     Controllable controller = new TestController().setRequest(emptyRequest());
 
     exceptionRule.expect(Controllable.FailedToInvokeControllerAction.class);
@@ -118,7 +117,7 @@ public class BaseControllerTest {
   }
 
   @Test
-  public void callThrowsAnExceptionIfTheFileIsMissing() throws IOException {
+  public void callThrowsAnExceptionIfTheFileIsMissing() {
     Controllable controller = new TestController().setRequest(emptyRequest());
 
     exceptionRule.expect(Controllable.MissingResource.class);
@@ -129,7 +128,7 @@ public class BaseControllerTest {
   }
 
   @Test
-  public void callThrowsAnExceptionIfTemplateDataIsMissing() throws IOException {
+  public void callThrowsAnExceptionIfTemplateDataIsMissing() {
     Controllable controller = new TestController().setRequest(emptyRequest());
 
     exceptionRule.expect(Controllable.MissingTemplateData.class);

@@ -10,7 +10,7 @@ public class Redirect extends BaseRoute {
     this.redirectPath = redirectPath;
   }
 
-  public Response getResponse(HTTPRequest request) {
+  public Response getResponse(Request request) {
     String URI = "http://" + request.getHeader("Host") + getRedirectPath();
 
     return new Response(301, Map.of("Location", URI));

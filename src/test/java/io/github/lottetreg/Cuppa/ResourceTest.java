@@ -4,13 +4,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.io.IOException;
+import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
 
 public class ResourceTest {
-  private HTTPRequest emptyRequest() throws IOException {
-    return RequestHelpers.buildHTTPRequest("GET", "/");
+  private Request emptyRequest() {
+    return new Request("GET", "/", new HashMap<>(), "");
   }
 
   @Rule
@@ -35,7 +35,7 @@ public class ResourceTest {
   }
 
   @Test
-  public void itReturnsA200ResponseWithTheResource() throws IOException {
+  public void itReturnsA200ResponseWithTheResource() {
     Resource resource = new Resource("", "", "/src/test/java/io/github/lottetreg/Cuppa/support/index.html");
 
     Response response = resource.getResponse(emptyRequest());
@@ -46,7 +46,7 @@ public class ResourceTest {
   }
 
   @Test
-  public void itThrowsAnExceptionIfTheResourceIsMissing() throws IOException {
+  public void itThrowsAnExceptionIfTheResourceIsMissing() {
     Resource resource = new Resource("", "", "/missing.html");
 
     exceptionRule.expect(Resource.MissingResource.class);

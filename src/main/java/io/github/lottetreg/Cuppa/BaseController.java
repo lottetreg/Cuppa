@@ -9,11 +9,11 @@ import static io.github.lottetreg.Cuppa.FileHelpers.getContentType;
 import static io.github.lottetreg.Cuppa.FileHelpers.readFile;
 
 public class BaseController implements Controllable {
-  private HTTPRequest request;
+  private Request request;
   private HashMap<String, String> headers = new HashMap<>();
   private HashMap<String, String> data = new HashMap<>();
 
-  public HTTPRequest getRequest() {
+  public Request getRequest() {
     return this.request;
   }
 
@@ -25,7 +25,7 @@ public class BaseController implements Controllable {
     this.data.put(key, value);
   }
 
-  public Controllable setRequest(HTTPRequest request) {
+  public Controllable setRequest(Request request) {
     this.request = request;
     return this;
   }

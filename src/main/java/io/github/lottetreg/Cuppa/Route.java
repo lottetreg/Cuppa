@@ -13,7 +13,7 @@ public class Route extends BaseRoute {
     this.actionName = actionName;
   }
 
-  public Response getResponse(HTTPRequest request) {
+  public Response getResponse(Request request) {
     String controllerName = getControllerName();
     String actionName = getActionName();
 
@@ -21,7 +21,7 @@ public class Route extends BaseRoute {
       Constructor<?> constructor = this.controller.getConstructor();
       Controllable controller = ((Controllable) constructor.newInstance()).setRequest(request);
 
-      return controller.call(actionName);
+      return controller.call(actionName); // define new Response(200..) in here instead of BaseController
 
     } catch (NoSuchMethodException e) {
       throw new MissingControllerConstructor(controllerName, e);

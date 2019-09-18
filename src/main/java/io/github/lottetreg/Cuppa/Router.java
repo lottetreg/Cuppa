@@ -1,53 +1,69 @@
 package io.github.lottetreg.Cuppa;
 
+import com.github.lottetreg.saucer.Routable;
+import com.github.lottetreg.saucer.HttpRequest;
+import com.github.lottetreg.saucer.HttpResponse;
+
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Router {
-  private List<Routable> routes;
+public class Router implements Routable {
+  private List<Responsive> routes;
 
-  Router(List<Routable> routes) {
+  Router(List<Responsive> routes) {
     this.routes = routes;
   }
 
-  Response route(HTTPRequest request) {
+  public HttpResponse route(HttpRequest httpRequest) {
+    Request request = new Request(
+        httpRequest.getMethod(),
+        httpRequest.getPath(),
+        httpRequest.getHeaders(),
+        httpRequest.getBody()
+    );
+
     String requestPath = request.getPath();
 
     if (noRoutesMatchPath(requestPath)) {
-      throw new NoMatchingPath(requestPath);
+      return createHttpResponse(new Response(404));
     }
 
     String requestMethod = request.getMethod();
 
     switch (requestMethod) {
       case "HEAD":
-        return new Response(200);
+        return createHttpResponse(new Response(200));
 
       case "OPTIONS":
-        return new Response(200, Map.of("Allow", getAllowedMethods(requestPath)));
+        return createHttpResponse(new Response(200, Map.of("Allow", getAllowedMethods(requestPath))));
 
       default:
-        return routesWithMatchingPath(requestPath)
+        Optional<Responsive> optionalRoute = routesWithMatchingPath(requestPath)
             .filter(route -> route.hasMethod(requestMethod))
-            .findFirst()
-            .orElseThrow(() -> new NoMatchingMethodForPath(requestMethod, requestPath))
-            .getResponse(request);
+            .findFirst();
+
+        if (optionalRoute.isPresent()) {
+          return createHttpResponse(optionalRoute.get().getResponse(request));
+        } else {
+          return createHttpResponse(new Response(405, Map.of("Allow", getAllowedMethods(requestPath))));
+        }
     }
   }
 
   String getAllowedMethods(String path) {
     Stream<String> allowedMethods = this.routes.stream()
         .filter(route -> route.hasPath(path))
-        .map(Routable::getMethod);
+        .map(Responsive::getMethod);
 
     return Stream.concat(allowedMethods, Stream.of("HEAD", "OPTIONS"))
         .distinct()
         .collect(Collectors.joining(", "));
   }
 
-  private Stream<Routable> routesWithMatchingPath(String path) {
+  private Stream<Responsive> routesWithMatchingPath(String path) {
     return this.routes.stream()
         .filter(route -> route.hasPath(path));
   }
@@ -57,15 +73,10 @@ public class Router {
         .noneMatch(route -> route.hasPath(path));
   }
 
-  static class NoMatchingPath extends RuntimeException {
-    NoMatchingPath(String path) {
-      super(path);
-    }
-  }
-
-  static class NoMatchingMethodForPath extends RuntimeException {
-    NoMatchingMethodForPath(String method, String path) {
-      super(method + " " + path);
-    }
+  private HttpResponse createHttpResponse(Response response) {
+    return new HttpResponse.Builder(response.getStatusCode())
+        .setHeaders(response.getHeaders())
+        .setBody(response.getBody())
+        .build();
   }
 }

@@ -14,7 +14,7 @@ public class BaseRouteTest {
     }
 
     @Override
-    public Response getResponse(HTTPRequest request) {
+    public Response getResponse(Request request) {
       return null;
     }
   }

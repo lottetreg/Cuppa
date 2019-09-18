@@ -1,6 +1,6 @@
 package io.github.lottetreg.Cuppa;
 
-public interface Routable {
+public interface Responsive {
   String getPath();
 
   String getMethod();
@@ -9,7 +9,7 @@ public interface Routable {
 
   Boolean hasMethod(String method);
 
-  Response getResponse(HTTPRequest request);
+  Response getResponse(Request request);
 
   class MissingResource extends RuntimeException {
     MissingResource(String resourcePath, Throwable cause) {

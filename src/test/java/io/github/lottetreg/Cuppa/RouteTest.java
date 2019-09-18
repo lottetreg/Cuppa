@@ -4,7 +4,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
@@ -15,8 +14,8 @@ public class RouteTest {
   @Rule
   public ExpectedException exceptionRule = ExpectedException.none();
 
-  private HTTPRequest emptyRequest() throws IOException {
-    return RequestHelpers.buildHTTPRequest("GET", "/");
+  private Request emptyRequest() {
+    return new Request("GET", "/", new HashMap<>(), "");
   }
 
   private Route newRouteForController(Class controller) {
@@ -24,9 +23,9 @@ public class RouteTest {
   }
 
   public static class Controller implements Controllable {
-    HTTPRequest request;
+    Request request;
 
-    public Controllable setRequest(HTTPRequest request) {
+    public Controllable setRequest(Request request) {
       this.request = request;
       return this;
     }
@@ -37,7 +36,7 @@ public class RouteTest {
   }
 
   @Test
-  public void itReturnsAResponseFromCallingTheController() throws IOException {
+  public void itReturnsAResponseFromCallingTheController() {
     Route route = newRouteForController(RouteTest.Controller.class);
 
     Response response = route.getResponse(emptyRequest());
@@ -48,13 +47,13 @@ public class RouteTest {
   }
 
   public static class BrokenConstructor implements Controllable {
-    HTTPRequest request;
+    Request request;
 
     public BrokenConstructor() {
       throw new RuntimeException();
     }
 
-    public Controllable setRequest(HTTPRequest request) {
+    public Controllable setRequest(Request request) {
       this.request = request;
       return this;
     }
@@ -65,7 +64,7 @@ public class RouteTest {
   }
 
   @Test
-  public void itThrowsAnExceptionIfTheControllerConstructorThrowsAnException() throws IOException {
+  public void itThrowsAnExceptionIfTheControllerConstructorThrowsAnException() {
     exceptionRule.expect(Route.FailedToInstantiateController.class);
     exceptionRule.expectCause(instanceOf(InvocationTargetException.class));
     exceptionRule.expectMessage("BrokenConstructor");
@@ -76,9 +75,9 @@ public class RouteTest {
   }
 
   public static class MissingResourceController implements Controllable {
-    HTTPRequest request;
+    Request request;
 
-    public Controllable setRequest(HTTPRequest request) {
+    public Controllable setRequest(Request request) {
       this.request = request;
       return this;
     }
@@ -89,7 +88,7 @@ public class RouteTest {
   }
 
   @Test
-  public void itThrowsAnExceptionIfCallingTheControllerThrowsAMissingResourceException() throws IOException {
+  public void itThrowsAnExceptionIfCallingTheControllerThrowsAMissingResourceException() {
     exceptionRule.expect(Route.MissingResource.class);
     exceptionRule.expectMessage("/missing.html");
 

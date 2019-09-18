@@ -32,7 +32,7 @@ jobs:
       - persist_to_workspace:
           root: ~/repo/jar
           paths:
-            - Cuppa-1.0-SNAPSHOT.jar
+            - cup-1.0-SNAPSHOT.jar
 
 
   deploy:

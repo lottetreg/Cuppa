@@ -28,13 +28,13 @@ configurations.all {
 
 jar {
     manifest {
-        attributes 'Main-Class': 'io.github.lottetreg.Cuppa.HTTPServer'
+        attributes 'Main-Class': 'io.github.lottetreg.cup.HTTPServer'
     }
     destinationDir = file('./jar')
 }
 
 application {
-    mainClassName = 'io.github.lottetreg.Cuppa.HTTPServer'
+    mainClassName = 'io.github.lottetreg.cup.HTTPServer'
 }
 
 wrapper {

@@ -2,36 +2,36 @@ package com.github.lottetreg.cup;
 
 import java.util.HashMap;
 
-class Request {
+public class Request {
   private String method;
   private String path;
   private HashMap<String, String> headers;
   private String body;
 
-  Request(String method, String path, HashMap<String, String> headers, String body) {
+  public Request(String method, String path, HashMap<String, String> headers, String body) {
     this.method = method;
     this.path = path;
     this.headers = headers;
     this.body = body;
   }
 
-  String getMethod() {
+  public String getMethod() {
     return this.method;
   }
 
-  String getPath() {
+  public String getPath() {
     return this.path;
   }
 
-  HashMap<String, String> getHeaders() {
+  public HashMap<String, String> getHeaders() {
     return this.headers;
   }
 
-  String getHeader(String headerName) {
+  public String getHeader(String headerName) {
     return getHeaders().get(headerName);
   }
 
-  String getBody() {
+  public String getBody() {
     return this.body;
   }
 }

@@ -1,17 +1,17 @@
-package io.github.lottetreg.Cuppa;
+package com.github.lottetreg.cup;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class Response {
   private int statusCode;
-  private byte[] body = new byte[] {};
   private HashMap<String, String> headers = new HashMap<>();
+  private byte[] body = new byte[] {};
 
-  public Response(int statusCode, byte[] body, Map<String, String> headers) {
+  public Response(int statusCode, Map<String, String> headers, byte[] body) {
     this.statusCode = statusCode;
-    this.body = body;
     this.headers = new HashMap<>(headers);
+    this.body = body;
   }
 
   public Response(int statusCode, byte[] body) {
@@ -32,11 +32,11 @@ public class Response {
     return this.statusCode;
   }
 
-  public byte[] getBody() {
-    return this.body;
-  }
-
   public HashMap<String, String> getHeaders() {
     return this.headers;
+  }
+
+  public byte[] getBody() {
+    return this.body;
   }
 }

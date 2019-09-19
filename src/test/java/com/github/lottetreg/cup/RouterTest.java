@@ -11,6 +11,16 @@ import static org.junit.Assert.assertEquals;
 
 public class RouterTest {
 
+  HttpRequest buildHttpRequest(String method, String path) {
+    return new HttpRequest(
+        method,
+        path,
+        "HTTP/1.0",
+        new HashMap<>(),
+        ""
+    );
+  }
+
   static class MockRoute extends BaseRoute {
     MockRoute(String method, String path) {
       super(method, path);
@@ -28,7 +38,7 @@ public class RouterTest {
   @Test
   public void itReturnsTheResponseFromTheMatchingRoute() {
     List<Responsive> routes = Collections.singletonList(new MockRoute("GET", "/"));
-    HttpRequest request = HttpRequestHelpers.buildHttpRequest("GET", "/");
+    HttpRequest request = buildHttpRequest("GET", "/");
 
     HttpResponse response = new Router(routes).route(request);
 
@@ -41,7 +51,7 @@ public class RouterTest {
   @Test
   public void itReturns404IfThereIsNoRouteWithMatchingPath() {
     List<Responsive> routes = new ArrayList<>();
-    HttpRequest request = HttpRequestHelpers.buildHttpRequest("GET", "/no_match");
+    HttpRequest request = buildHttpRequest("GET", "/no_match");
 
     HttpResponse response = new Router(routes).route(request);
 
@@ -53,7 +63,7 @@ public class RouterTest {
   @Test
   public void itReturnsAnEmpty200IfItReceivesAHeadRequest() {
     List<Responsive> routes = Collections.singletonList(new MockRoute("GET", "/"));
-    HttpRequest request = HttpRequestHelpers.buildHttpRequest("HEAD", "/");
+    HttpRequest request = buildHttpRequest("HEAD", "/");
 
     HttpResponse response = new Router(routes).route(request);
 
@@ -65,7 +75,7 @@ public class RouterTest {
   @Test
   public void itReturnsA200WithAllowedMethodsIfItReceivesAnOptionsRequest() {
     List<Responsive> routes = Collections.singletonList(new MockRoute("GET", "/"));
-    HttpRequest request = HttpRequestHelpers.buildHttpRequest("OPTIONS", "/");
+    HttpRequest request = buildHttpRequest("OPTIONS", "/");
 
     HttpResponse response = new Router(routes).route(request);
 
@@ -79,7 +89,7 @@ public class RouterTest {
     List<Responsive> routes = Arrays.asList(
         new MockRoute("GET", "/"),
         new MockRoute("DELETE", "/"));
-    HttpRequest request = HttpRequestHelpers.buildHttpRequest("POST", "/");
+    HttpRequest request = buildHttpRequest("POST", "/");
 
     HttpResponse response = new Router(routes).route(request);
 

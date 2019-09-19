@@ -1,10 +1,9 @@
 plugins {
     id 'java'
-    id 'application'
     id 'maven'
 }
 
-version '1.0-SNAPSHOT' // update
+version '1.0'
 
 group = 'com.github.lottetreg'
 
@@ -19,22 +18,6 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     implementation 'com.github.lottetreg:saucer:v1.0'
-}
-
-// don't cache dependencies during development
-configurations.all {
-    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-}
-
-jar {
-    manifest {
-        attributes 'Main-Class': 'io.github.lottetreg.cup.HTTPServer'
-    }
-    destinationDir = file('./jar')
-}
-
-application {
-    mainClassName = 'io.github.lottetreg.cup.HTTPServer'
 }
 
 wrapper {

@@ -5,8 +5,8 @@ import java.util.Map;
 public class Redirect extends BaseRoute {
   private String redirectPath;
 
-  public Redirect(String path, String method, String redirectPath) {
-    super(path, method);
+  public Redirect(String method, String path, String redirectPath) {
+    super(method, path);
     this.redirectPath = redirectPath;
   }
 

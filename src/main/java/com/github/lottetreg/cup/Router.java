@@ -53,7 +53,7 @@ public class Router implements Routable {
     }
   }
 
-  String getAllowedMethods(String path) {
+  private String getAllowedMethods(String path) {
     Stream<String> allowedMethods = this.routes.stream()
         .filter(route -> route.getPath().equals(path))
         .map(Responsive::getMethod);

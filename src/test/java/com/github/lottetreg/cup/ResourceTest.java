@@ -18,13 +18,13 @@ public class ResourceTest {
 
   @Test
   public void itHasAPath() {
-    Resource resource = new Resource("/", "", "");
+    Resource resource = new Resource("", "/", "");
     assertEquals("/", resource.getPath());
   }
 
   @Test
   public void itHasAMethod() {
-    Resource resource = new Resource("", "GET", "");
+    Resource resource = new Resource("GET", "", "");
     assertEquals("GET", resource.getMethod());
   }
 

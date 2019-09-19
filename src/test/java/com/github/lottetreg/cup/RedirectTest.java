@@ -11,13 +11,13 @@ import static org.junit.Assert.*;
 public class RedirectTest {
   @Test
   public void itHasAPath() {
-    Redirect redirect = new Redirect("/", "", "");
+    Redirect redirect = new Redirect("", "/", "");
     assertEquals("/", redirect.getPath());
   }
 
   @Test
   public void itHasAMethod() {
-    Redirect redirect = new Redirect("", "GET", "");
+    Redirect redirect = new Redirect("GET", "", "");
     assertEquals("GET", redirect.getMethod());
   }
 

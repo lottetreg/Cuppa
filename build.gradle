@@ -18,7 +18,7 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    implementation 'com.github.lottetreg:saucer:move-classes-over-from-cuppa-SNAPSHOT'
+    implementation 'com.github.lottetreg:saucer:v1.0'
 }
 
 // don't cache dependencies during development

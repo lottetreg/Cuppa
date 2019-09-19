@@ -22,17 +22,17 @@ public class HTTPServer {
 
   private static List<Responsive> getRoutes() {
     return new ArrayList<>(Arrays.asList(
-        new Route("/simple_get", "GET", ExampleController.class, "empty"),
-        new Route("/echo_body", "POST", ExampleController.class, "echo"),
-        new Route("/method_options", "GET", ExampleController.class, "empty"),
-        new Route("/method_options2", "GET", ExampleController.class, "empty"),
-        new Route("/method_options2", "PUT", ExampleController.class, "empty"),
-        new Route("/method_options2", "POST", ExampleController.class, "empty"),
-        new Route("/pickles", "GET", ExampleController.class, "pickles"),
-        new Route("/pickles_with_header", "GET", ExampleController.class, "picklesWithHeader"),
-        new Redirect("/redirect", "GET", "/simple_get"),
-        new Route("/get_with_body", "HEAD", ExampleController.class, ""),
-        new Route("/time", "GET", ExampleController.class, "time")
+        new Route("GET", "/simple_get", ExampleController.class, "empty"),
+        new Route("POST", "/echo_body", ExampleController.class, "echo"),
+        new Route("GET", "/method_options", ExampleController.class, "empty"),
+        new Route("GET", "/method_options2", ExampleController.class, "empty"),
+        new Route("PUT", "/method_options2", ExampleController.class, "empty"),
+        new Route("POST", "/method_options2", ExampleController.class, "empty"),
+        new Route("GET", "/pickles", ExampleController.class, "pickles"),
+        new Route("GET", "/pickles_with_header", ExampleController.class, "picklesWithHeader"),
+        new Redirect("GET", "/redirect", "/simple_get"),
+        new Route("HEAD", "/get_with_body", ExampleController.class, ""),
+        new Route("GET", "/time", ExampleController.class, "time")
     ));
   }
 
@@ -45,7 +45,7 @@ public class HTTPServer {
 
   private static List<Responsive> defaultRoutes() {
     return Arrays.asList(
-        new Resource("/", "GET", "/index.html")
+        new Resource("GET", "/", "/index.html")
     );
   }
 
@@ -61,7 +61,7 @@ public class HTTPServer {
 
       stream.forEach(path -> {
         String resourcePath = "/" + Path.of(".").relativize(path).toString();
-        Resource resource = new Resource(resourcePath, "GET", resourcePath);
+        Resource resource = new Resource("GET", resourcePath, resourcePath);
         resources.add(resource);
       });
 

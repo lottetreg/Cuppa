@@ -10,7 +10,7 @@ public class BaseRouteTest {
 
   public class TestRoute extends BaseRoute {
     TestRoute(String path, String method) {
-      super(path, method);
+      super(method, path);
     }
 
     @Override

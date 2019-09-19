@@ -1,4 +1,4 @@
-package com.github.lottetreg.cup.support;
+package com.github.lottetreg.cup;
 
 public class RequestStringBuilder {
   private static String CRLF = "\r\n";

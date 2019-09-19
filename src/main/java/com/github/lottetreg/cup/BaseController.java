@@ -52,7 +52,7 @@ public class BaseController implements Controllable {
         body = readFile(filePath);
       }
 
-      return new Response(200, body, this.headers);
+      return new Response(200, this.headers, body);
 
     } catch (NoSuchMethodException e) {
       throw new MissingControllerAction(actionName, e);

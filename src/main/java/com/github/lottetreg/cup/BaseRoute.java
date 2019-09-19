@@ -4,7 +4,7 @@ public abstract class BaseRoute implements Responsive {
   protected String path;
   protected String method;
 
-  BaseRoute(String path, String method) {
+  BaseRoute(String method, String path) {
     this.path = path;
     this.method = method;
   }

@@ -8,7 +8,7 @@ public class Response {
   private HashMap<String, String> headers = new HashMap<>();
   private byte[] body = new byte[] {};
 
-  public Response(int statusCode, byte[] body, Map<String, String> headers) {
+  public Response(int statusCode, Map<String, String> headers, byte[] body) {
     this.statusCode = statusCode;
     this.headers = new HashMap<>(headers);
     this.body = body;

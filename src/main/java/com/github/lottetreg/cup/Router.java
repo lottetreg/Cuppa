@@ -1,6 +1,5 @@
 package com.github.lottetreg.cup;
 
-import com.github.lottetreg.saucer.Routable;
 import com.github.lottetreg.saucer.HttpRequest;
 import com.github.lottetreg.saucer.HttpResponse;
 
@@ -10,7 +9,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Router implements Routable {
+public class Router {
   private List<Responsive> routes;
 
   Router(List<Responsive> routes) {

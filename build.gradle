@@ -17,7 +17,8 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    implementation 'com.github.lottetreg:saucer:v1.0'
+    implementation 'com.github.lottetreg:saucer:change-router-to-servlet-SNAPSHOT'
+//    implementation 'com.github.lottetreg:saucer:v1.0'
 }
 
 wrapper {

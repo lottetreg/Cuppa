@@ -3,7 +3,7 @@ package com.github.lottetreg.cup;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Response {
+class Response {
   private int statusCode;
   private HashMap<String, String> headers = new HashMap<>();
   private byte[] body = new byte[] {};

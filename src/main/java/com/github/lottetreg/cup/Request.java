@@ -2,7 +2,7 @@ package com.github.lottetreg.cup;
 
 import java.util.HashMap;
 
-public class Request {
+class Request {
   private String method;
   private String path;
   private HashMap<String, String> headers;
